@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "exploregalore",
   "version": "${version}",
 
-  "name": "Example Mod",
+  "name": "Explore Galore!",
   "description": "This is an example description! Tell everyone what your mod is about!",
   "authors": [
     "Me!"
@@ -19,11 +19,11 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "fred.exploregalore.ExploreGalore"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "exploregalore.mixins.json"
   ],
 
   "depends": {

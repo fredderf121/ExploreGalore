@@ -1,14 +1,29 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.fabricmc.example.mixin",
+  "package": "fred.exploregalore.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "EntityPrevPosMixin"
   ],
   "client": [
-    "ExampleMixin"
+  ],
+  "server": [
   ],
   "injectors": {
     "defaultRequire": 1
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

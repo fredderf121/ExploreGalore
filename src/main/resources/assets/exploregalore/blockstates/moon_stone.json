@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "exploregalore:block/moon_stone"
+    },
+    "lit=true": {
+      "model": "exploregalore:block/moon_stone_on"
+    }
+  }
+}
