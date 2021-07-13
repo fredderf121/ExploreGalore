@@ -1,23 +1,19 @@
 package fred.exploregalore.core;
 
 import fred.exploregalore.ExploreGalore;
-import fred.exploregalore.blocks.LivingLilyStemBlock;
 import fred.exploregalore.blocks.MoonStoneBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class BlockList {
 
     public static final Block MOON_STONE;
-    public static final Block LIVING_LILY_STEM;
 
     static {
         MOON_STONE = registerBlock(new MoonStoneBlock(AbstractBlock.Settings.of(Material.STONE).strength(1.5f, 6.0f).luminance((state) -> MoonStoneBlock.isLit(state) ? 15 : 0)), "moon_stone");
-        LIVING_LILY_STEM = registerBlock(new LivingLilyStemBlock(AbstractBlock.Settings.of(Material.PLANT).strength(0.1F).sounds(BlockSoundGroup.GRASS)), "living_lily_stem");
     }
 
     private static <T extends Block> T registerBlock(T block, String registryName) {

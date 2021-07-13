@@ -1,6 +1,7 @@
 package fred.exploregalore.core;
 
 import fred.exploregalore.ExploreGalore;
+import fred.exploregalore.core.BlockList;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -12,7 +13,6 @@ public class ItemList {
     // Items
     public static final Item EXPLORERS_TOOL;
     public static final Item MAGIC_WAND;
-    public static final Item LIVING_LILY_STEM;
 
     // Block Items
     public static final Item MOON_STONE;
@@ -25,8 +25,6 @@ public class ItemList {
 
         // Block Items
         MOON_STONE = registerItem(new BlockItem(BlockList.MOON_STONE, new Item.Settings().group(ItemGroup.MISC)), Registry.BLOCK.getId(BlockList.MOON_STONE));
-        LIVING_LILY_STEM = registerItem(new BlockItem(BlockList.LIVING_LILY_STEM, new Item.Settings().group(ItemGroup.MISC)), Registry.BLOCK.getId(BlockList.LIVING_LILY_STEM));
-
     }
 
     private static <T extends Item> T registerItem(T item, String registryName) {

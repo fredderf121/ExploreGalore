@@ -1,4 +1,4 @@
-package fred.exploregalore.lib;
+package fred.exploregalore.util;
 
 import org.w3c.dom.Entity;
 

@@ -1,0 +1,67 @@
+{
+  "variants": {
+    "facing=north,lily_stem_type=base": {
+      "model": "exploregalore:block/lily_stem_base"
+    },
+    "facing=south,lily_stem_type=base": {
+      "model": "exploregalore:block/lily_stem_base",
+      "y": 180
+    },
+    "facing=west,lily_stem_type=base": {
+      "model": "exploregalore:block/lily_stem_base",
+      "y": 270
+    },
+    "facing=east,lily_stem_type=base": {
+      "model": "exploregalore:block/lily_stem_base",
+      "y": 90
+    },
+
+    "facing=north,lily_stem_type=default": {
+      "model": "exploregalore:block/lily_stem_default"
+    },
+    "facing=south,lily_stem_type=default": {
+      "model": "exploregalore:block/lily_stem_default",
+      "y": 180
+    },
+    "facing=west,lily_stem_type=default": {
+      "model": "exploregalore:block/lily_stem_default",
+      "y": 270
+    },
+    "facing=east,lily_stem_type=default": {
+      "model": "exploregalore:block/lily_stem_default",
+      "y": 90
+    },
+
+    "facing=north,lily_stem_type=attached_middle": {
+      "model": "exploregalore:block/lily_stem_attached_middle"
+    },
+    "facing=south,lily_stem_type=attached_middle": {
+      "model": "exploregalore:block/lily_stem_attached_middle",
+      "y": 180
+    },
+    "facing=west,lily_stem_type=attached_middle": {
+      "model": "exploregalore:block/lily_stem_attached_middle",
+      "y": 270
+    },
+    "facing=east,lily_stem_type=attached_middle": {
+      "model": "exploregalore:block/lily_stem_attached_middle",
+      "y": 90
+    },
+
+    "facing=north,lily_stem_type=attached_top": {
+      "model": "exploregalore:block/lily_stem_attached_top"
+    },
+    "facing=south,lily_stem_type=attached_top": {
+      "model": "exploregalore:block/lily_stem_attached_top",
+      "y": 180
+    },
+    "facing=west,lily_stem_type=attached_top": {
+      "model": "exploregalore:block/lily_stem_attached_top",
+      "y": 270
+    },
+    "facing=east,lily_stem_type=attached_top": {
+      "model": "exploregalore:block/lily_stem_attached_top",
+      "y": 90
+    }
+  }
+}

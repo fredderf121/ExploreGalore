@@ -1,4 +1,4 @@
-package fred.exploregalore.lib;
+package fred.exploregalore.util;
 
 import java.util.Arrays;
 import java.util.Iterator;

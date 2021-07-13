@@ -1,6 +1,6 @@
 package fred.exploregalore.blocks;
 
-import fred.exploregalore.util.math.DiscreteCircle;
+import fred.exploregalore.util.DiscreteCircle;
 import fred.exploregalore.util.EntityPrevPosAccess;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -102,12 +102,12 @@ public class MoonStoneBlock extends Block {
      * </ol>
      */
     @Override
-    public void onSteppedOn(World world, BlockPos pos, BlockState steppedOnBlockState, Entity entity) {
+    public void onSteppedOn(World world, BlockPos pos, Entity entity) {
 
 
         if ((!world.isClient) && entity instanceof LivingEntity) {
 
-
+            BlockState steppedOnBlockState = world.getBlockState(pos);
             boolean isLit = steppedOnBlockState.get(LIT);
             if (!isLit) {
 
@@ -122,7 +122,7 @@ public class MoonStoneBlock extends Block {
             // to the player entity's prevX/Y/Z variables not working serverside
             ((EntityPrevPosAccess) entity).savePrevPos();
         }
-        super.onSteppedOn(world, pos, steppedOnBlockState, entity);
+        super.onSteppedOn(world, pos, entity);
     }
     /*
      * 1. On block stepped on, check if entity is moving.
@@ -143,20 +143,21 @@ public class MoonStoneBlock extends Block {
      * </ol>
      */
     @Override
-    public void onLandedUpon(World world, BlockState steppedOnBlockState, BlockPos pos, Entity entity, float fallDistance) {
+    public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
 
 
         if ((!world.isClient) && entity instanceof LivingEntity) {
 
+            BlockState steppedOnBlockState = world.getBlockState(pos);
 
             //if (!steppedOnBlockState.get(LIT)) {
-                int radiatingCircleRadius = (fallDistance * 0.5F) > (DiscreteCircle.MAX_RADIUS - 1) ? DiscreteCircle.MAX_RADIUS : (int) (fallDistance * 0.5F) + 2;
+                int radiatingCircleRadius = (distance * 0.5F) > (DiscreteCircle.MAX_RADIUS - 1) ? DiscreteCircle.MAX_RADIUS : (int) (distance * 0.5F) + 2;
                 lightBlocksInRadiatingCircles(steppedOnBlockState, world, pos, radiatingCircleRadius);
           //  }
 
             ((EntityPrevPosAccess) entity).savePrevPos();
         }
-        super.onLandedUpon(world, steppedOnBlockState, pos, entity, fallDistance);
+        super.onLandedUpon(world, pos, entity, distance);
     }
 
 
