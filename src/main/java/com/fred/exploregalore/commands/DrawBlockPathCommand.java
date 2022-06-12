@@ -11,6 +11,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.blocks.BlockInput;
+import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -86,36 +87,33 @@ public class DrawBlockPathCommand {
                 LiteralArgumentBuilder.<CommandSourceStack>literal("exploregalore")
                         .then(Commands.literal("drawblockpath")
                                 .requires(commandSourceStack -> commandSourceStack.hasPermission(Commands.LEVEL_GAMEMASTERS)) // Includes gamerule, setblock, gamemode
-                                .then(Commands.argument("startPos", BlockPosArgument.blockPos())
-                                        .then(Commands.argument("endPos", BlockPosArgument.blockPos())
-                                                .executes(context -> drawBlockPath(
-                                                        context.getSource(),
-                                                        BlockPosArgument.getSpawnablePos(context, "startPos"),
-                                                        BlockPosArgument.getSpawnablePos(context, "endPos")))
+                                .then(Commands.argument("block", BlockStateArgument.block())
+                                        .then(Commands.argument("startPos", BlockPosArgument.blockPos())
+                                                .then(Commands.argument("endPos", BlockPosArgument.blockPos())
+                                                        .executes(context -> drawBlockPath(
+                                                                context.getSource(),
+                                                                BlockStateArgument.getBlock(context, "block"),
+                                                                BlockPosArgument.getSpawnablePos(context, "startPos"),
+                                                                BlockPosArgument.getSpawnablePos(context, "endPos")))
+                                                )
                                         )
-                                )
-                        )
+                                ))
         );
 
     }
 
-    private static int drawBlockPath(CommandSourceStack commandSourceStack, BlockPos startPos, BlockPos endPos) throws CommandSyntaxException {
+    private static int drawBlockPath(CommandSourceStack commandSourceStack, BlockInput block, BlockPos startPos, BlockPos endPos) throws CommandSyntaxException {
         ExploreGalore.LOGGER.info("Explore Galore 'drawblockpath' Command Execute Success!");
 
         ServerLevel serverLevel = commandSourceStack.getLevel();
 
-        // For now, we hard code our path to use pink wool.
-        Block PINK_WOOL_BLOCK = Blocks.RAIL;
-
-        // Cool stuff with rails
-        // Block PINK_WOOL_BLOCK = Blocks.RAIL;
 
         Iterable<BlockPos> path = new PathBuilder()
                 .linearPath3D(startPos, endPos)
                 //.helixPathCounterClockwiseY3d(startPos, endPos, 10, 3)
                 .getBlockPath();
         for (BlockPos blockPos : path) {
-            if (!tryPlacingBlock(serverLevel, blockPos, PINK_WOOL_BLOCK)) {
+            if (!tryPlacingBlock(serverLevel, blockPos, block.getState().getBlock())) {
                 throw ERROR_FAILED.create();
             }
         }

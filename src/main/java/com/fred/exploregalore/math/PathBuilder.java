@@ -118,13 +118,16 @@ public class PathBuilder {
         // Similar to the 2d code, refer to onenote for explanations
         for (int ix = 0, iy = 0, iz = 0, i = 0; i < totalNumBlocksMinusStarting; i++) {
 
-            if (distZ * (2 * ix + 1) <= distX * (2 * iz + 1)) {
-                ix++;
-            } else if (2 * distY * (ix + iz + 1) <= (distX + distZ) * (2 * iy + 1)) {
+            // For rail compatibility, we prioritize an increment in z before x or y.
+            if (distZ * (2* ix + 1) > distX * (2 * iz + 1) && distZ * (2* iy + 1) > distY * (2 * iz + 1)) {
                 iz++;
+            } else if (distX * (2* iy + 1) > distY * (2 * ix + 1)) {
+                ix++;
             } else {
                 iy++;
             }
+
+
 
             blockPosList.add(startPos.offset(dirX * ix, dirY * iy, dirZ * iz));
 

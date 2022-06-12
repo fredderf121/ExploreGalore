@@ -1,29 +1,25 @@
 package com.fred.exploregalore;
 
 import com.fred.exploregalore.commands.DrawBlockPathCommand;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import com.fred.exploregalore.item.BuildersWand;
+import com.fred.exploregalore.item.Items;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.stream.Collectors;
-
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("exploregalore")
-public class ExploreGalore
-{
+@Mod(ExploreGalore.MOD_ID)
+public class ExploreGalore {
+    public static final String MOD_ID = "exploregalore";
+
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
 
@@ -31,15 +27,22 @@ public class ExploreGalore
 
         // Register ourselves for server and other game events we are interested in
         // This is REQUIRED for our @SubscribeEvent annotations to be found by Forge!
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.addListener(this::onRegisterCommands);
+
+        // Something I don't quite understand yet, but this is a different event bus
+        // required for registering items, blocks, etc.
+        var eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        Items.ITEM_REGISTRY.register(eventBus);
 
     }
 
     @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent event) {
+    public void onRegisterCommands(RegisterCommandsEvent registerCommandEvent) {
         LOGGER.info("Registering Explore Galore's Commands!");
-        DrawBlockPathCommand.register(event.getDispatcher());
+        DrawBlockPathCommand.register(registerCommandEvent.getDispatcher());
     }
+
+
 
 
 }
