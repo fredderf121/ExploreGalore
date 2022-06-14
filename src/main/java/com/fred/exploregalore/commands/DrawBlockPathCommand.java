@@ -1,7 +1,6 @@
 package com.fred.exploregalore.commands;
 
-import com.fred.exploregalore.ExploreGalore;
-import com.fred.exploregalore.math.PathBuilder;
+import com.fred.exploregalore.drawing.LinearPathDrawer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -19,7 +18,6 @@ import net.minecraft.server.commands.SetBlockCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
@@ -73,7 +71,7 @@ public class DrawBlockPathCommand {
      *         These are all the arguments we want, so we specify what should happen if
      *         the user correctly types all these arguments in using {@code .executes()}.
      *         We provide an implementation of the functional interface {@link Command},
-     *         where we call our own method, {@link DrawBlockPathCommand#drawBlockPath}.
+     *         where we call our own method, {@link LinearPathDrawer#drawBlockPath}.
      *         The functional interface provides a {@link CommandContext} as a parameter.
      *         We use that to retrieve values provided in the command (like blockpos).
      *     </li>
@@ -90,9 +88,9 @@ public class DrawBlockPathCommand {
                                 .then(Commands.argument("block", BlockStateArgument.block())
                                         .then(Commands.argument("startPos", BlockPosArgument.blockPos())
                                                 .then(Commands.argument("endPos", BlockPosArgument.blockPos())
-                                                        .executes(context -> drawBlockPath(
-                                                                context.getSource(),
-                                                                BlockStateArgument.getBlock(context, "block"),
+                                                        .executes(context -> LinearPathDrawer.drawBlockPath(
+                                                                context.getSource().getLevel(),
+                                                                BlockStateArgument.getBlock(context, "block").getState().getBlock(),
                                                                 BlockPosArgument.getSpawnablePos(context, "startPos"),
                                                                 BlockPosArgument.getSpawnablePos(context, "endPos")))
                                                 )
@@ -100,49 +98,6 @@ public class DrawBlockPathCommand {
                                 ))
         );
 
-    }
-
-    private static int drawBlockPath(CommandSourceStack commandSourceStack, BlockInput block, BlockPos startPos, BlockPos endPos) throws CommandSyntaxException {
-        ExploreGalore.LOGGER.info("Explore Galore 'drawblockpath' Command Execute Success!");
-
-        ServerLevel serverLevel = commandSourceStack.getLevel();
-
-
-        Iterable<BlockPos> path = new PathBuilder()
-                .linearPath3D(startPos, endPos)
-                //.helixPathCounterClockwiseY3d(startPos, endPos, 10, 3)
-                .getBlockPath();
-        for (BlockPos blockPos : path) {
-            if (!tryPlacingBlock(serverLevel, blockPos, block.getState().getBlock())) {
-                throw ERROR_FAILED.create();
-            }
-        }
-
-/*        for (BlockPos blockPos : PathFinder.LinearPath3d(startPos, endPos)) {
-            if (!tryPlacingBlock(serverLevel, blockPos, PINK_WOOL_BLOCK)) {
-                throw ERROR_FAILED.create();
-            }
-        }*/
-
-        commandSourceStack.sendSuccess(new TranslatableComponent("commands.drawblockpath.success"), true);
-        return Command.SINGLE_SUCCESS;
-
-
-    }
-
-    private static boolean tryPlacingBlock(ServerLevel serverLevel, BlockPos blockPos, Block blockToPlace) {
-        // If the existing block at blockPos is a BlockEntity, we want to first remove its
-        // inventory (so nothing drops)
-        BlockEntity blockEntity = serverLevel.getBlockEntity(blockPos);
-        Clearable.tryClear(blockEntity);
-
-        // Don't know if I should use this method, or if a "safer" method exists
-        // UPDATE_ALL to update client, rendering, neighboring blocks, etc.
-        // Returns true if block placement was successful.
-        return serverLevel.setBlock(blockPos, blockToPlace.defaultBlockState(), Block.UPDATE_ALL);
-
-        // Delivering neighboring updates, don't need it when using Block.UPDATE_ALL
-        // serverLevel.blockUpdated(blockPos, PINK_WOOL_BLOCK);
     }
 
 

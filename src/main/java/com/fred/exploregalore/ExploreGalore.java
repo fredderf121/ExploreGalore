@@ -1,17 +1,12 @@
 package com.fred.exploregalore;
 
 import com.fred.exploregalore.commands.DrawBlockPathCommand;
-import com.fred.exploregalore.item.BuildersWand;
-import com.fred.exploregalore.item.Items;
-import net.minecraft.world.item.Item;
+import com.fred.exploregalore.item.ExploreGaloreItems;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +27,7 @@ public class ExploreGalore {
         // Something I don't quite understand yet, but this is a different event bus
         // required for registering items, blocks, etc.
         var eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        Items.ITEM_REGISTRY.register(eventBus);
+        ExploreGaloreItems.ITEM_REGISTRY.register(eventBus);
 
     }
 
