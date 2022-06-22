@@ -31,8 +31,7 @@ public class LinearPathDrawer {
                 .getBlockPath();
         for (BlockPos blockPos : path) {
             if (!tryPlacingBlock(serverLevel, blockPos, block)) {
-//                throw DrawBlockPathCommand.ERROR_FAILED.create();
-                throw new RuntimeException("Failed to draw block, TODO handle");
+                log.debug("tryPlacingBlock failed, likely due to the block already being there.");
             }
         }
 
@@ -51,8 +50,7 @@ public class LinearPathDrawer {
 
         for (val voxelPos : new VoxelCubicBezier(P0, P1, P2, P3)) {
             if (!tryPlacingBlock(serverLevel, new BlockPos(voxelPos), block)) {
-//                throw DrawBlockPathCommand.ERROR_FAILED.create();
-                throw new RuntimeException("Failed to draw block, TODO handle");
+                log.debug("tryPlacingBlock failed, likely due to the block already being there.");
             }
         }
 
@@ -63,6 +61,7 @@ public class LinearPathDrawer {
 
 
     }
+
 
     private static boolean tryPlacingBlock(ServerLevel serverLevel, BlockPos blockPos, Block blockToPlace) {
         // If the existing block at blockPos is a BlockEntity, we want to first remove its

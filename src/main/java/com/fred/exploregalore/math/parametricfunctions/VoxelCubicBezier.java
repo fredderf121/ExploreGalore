@@ -107,21 +107,20 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
         /**
          * {@code n} as used in the paper.
          */
-        private final int N;
+        private final long N;
         /**
          * {@code n^3}
          */
-        private final int N_CUBED;
+        private final long N_CUBED;
         /**
          * {@code 2 * n^3}
          */
-        private final int N_DOUBLED_CUBED;
+        private final long N_DOUBLED_CUBED;
 
-        private final int NUM_VOXELS_CURVE_LENGTH;
 
-        private int[] xForwardDifferencesScaled;
-        private int[] yForwardDifferencesScaled;
-        private int[] zForwardDifferencesScaled;
+        private long[] xForwardDifferencesScaled;
+        private long[] yForwardDifferencesScaled;
+        private long[] zForwardDifferencesScaled;
 
         private Vec3i currentVoxel;
 
@@ -131,20 +130,18 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
 
             val maxFirstDerivativeAbs = maxFirstDerivativeAbs();
 
-            N = (int) Math.ceil(Vec3Utils.maxCoordinateVal(maxFirstDerivativeAbs));
+            // Sum of maximum first derivatives, needed for 6-connectivity
+            N = (int) Math.ceil(Vec3Utils.sumCoordinates(maxFirstDerivativeAbs));
             N_CUBED = N * N * N;
             N_DOUBLED_CUBED = 2 * N_CUBED;
             log.debug("Calculating N: {}, N^3: {}, 2N^3: {}", N, N_CUBED, N_DOUBLED_CUBED);
 
-            NUM_VOXELS_CURVE_LENGTH = (int) Math.ceil(Vec3Utils.sumCoordinates(maxFirstDerivativeAbs));
-            log.debug("Calculated curve length: {}", NUM_VOXELS_CURVE_LENGTH);
-
             val forwardDifferenceMatrixAtZero = forwardDifferenceMatrixAtZero();
 
             double[][] forwardDifferenceMatrixAtZeroArray = SimpleMatrixUtils.toDoubleArray(forwardDifferenceMatrixAtZero.transpose());
-            xForwardDifferencesScaled = ArrayUtils.doubleToInt(forwardDifferenceMatrixAtZeroArray[0]);
-            yForwardDifferencesScaled = ArrayUtils.doubleToInt(forwardDifferenceMatrixAtZeroArray[1]);
-            zForwardDifferencesScaled = ArrayUtils.doubleToInt(forwardDifferenceMatrixAtZeroArray[2]);
+            xForwardDifferencesScaled = ArrayUtils.doubleToLong(forwardDifferenceMatrixAtZeroArray[0]);
+            yForwardDifferencesScaled = ArrayUtils.doubleToLong(forwardDifferenceMatrixAtZeroArray[1]);
+            zForwardDifferencesScaled = ArrayUtils.doubleToLong(forwardDifferenceMatrixAtZeroArray[2]);
             log.debug("Initial forward differences at zero, x: {}, y: {}, z: {}",
                     Arrays.toString(xForwardDifferencesScaled),
                     Arrays.toString(yForwardDifferencesScaled),
@@ -174,7 +171,6 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
         public Vec3i next() {
             val returnVoxel = currentVoxel;
 
-
             // Calculating the next voxel before returning the current one.
             // We may need to repeat this multiple times as the step size is
             // derived from the *maximum* first difference, meaning one round of updates
@@ -183,28 +179,39 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
                 if (xForwardDifferencesScaled[0] > N_CUBED) {
                     currentVoxel = currentVoxel.offset(1, 0, 0);
                     xForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
+                    updateForwardDifferences(xForwardDifferencesScaled);
+
                 } else if (xForwardDifferencesScaled[0] < -N_CUBED) {
                     currentVoxel = currentVoxel.offset(-1, 0, 0);
                     xForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
-                }
-                if (yForwardDifferencesScaled[0] > N_CUBED) {
+                    updateForwardDifferences(xForwardDifferencesScaled);
+
+                } else if (yForwardDifferencesScaled[0] > N_CUBED) {
                     currentVoxel = currentVoxel.offset(0, 1, 0);
                     yForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
+                    updateForwardDifferences(yForwardDifferencesScaled);
+
                 } else if (yForwardDifferencesScaled[0] < -N_CUBED) {
                     currentVoxel = currentVoxel.offset(0, -1, 0);
                     yForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
-                }
-                if (zForwardDifferencesScaled[0] > N_CUBED) {
+                    updateForwardDifferences(yForwardDifferencesScaled);
+
+                } else if (zForwardDifferencesScaled[0] > N_CUBED) {
                     currentVoxel = currentVoxel.offset(0, 0, 1);
                     zForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
+                    updateForwardDifferences(zForwardDifferencesScaled);
+
                 } else if (zForwardDifferencesScaled[0] < -N_CUBED) {
                     currentVoxel = currentVoxel.offset(0, 0, -1);
                     zForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
+                    updateForwardDifferences(zForwardDifferencesScaled);
+                } else {
+                    updateForwardDifferences(xForwardDifferencesScaled);
+                    updateForwardDifferences(yForwardDifferencesScaled);
+                    updateForwardDifferences(zForwardDifferencesScaled);
+
                 }
 
-                updateForwardDifferences(xForwardDifferencesScaled);
-                updateForwardDifferences(yForwardDifferencesScaled);
-                updateForwardDifferences(zForwardDifferencesScaled);
             } while (currentVoxel.equals(returnVoxel));
 
             log.debug("Next voxel position: {}", returnVoxel);
@@ -293,7 +300,7 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
         }
 
 
-        private void updateForwardDifferences(int[] forwardDifferences) {
+        private void updateForwardDifferences(long[] forwardDifferences) {
             for (int i = 0; i < forwardDifferences.length - 1; i++) {
                 forwardDifferences[i] += forwardDifferences[i + 1];
             }

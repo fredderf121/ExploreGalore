@@ -9,6 +9,9 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.ejml.simple.SimpleMatrix;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openjdk.nashorn.internal.ir.annotations.Ignore;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class VoxelCubicBezierTest {
 
@@ -34,7 +37,7 @@ public class VoxelCubicBezierTest {
     }
 
     @Test
-    public void instantiateIterator() {
+    public void instantiateIteratorSimpleOneDimension() {
         val testCurve = new VoxelCubicBezier(
                 new Vec3i(0, 0, 0),
                 new Vec3i(5, 0, 0),
@@ -46,5 +49,34 @@ public class VoxelCubicBezierTest {
             //System.out.println(vec);
         }
 
+    }
+
+    @Test
+    public void instantiateIteratorComplexThreeDimension() {
+        val testCurve = new VoxelCubicBezier(
+                new Vec3i(0, 0, 0),
+                new Vec3i(100, 200, 100),
+                new Vec3i(0, 150, 0),
+                new Vec3i(20, 0, 30));
+
+        int counter = 0;
+        for (val vec : testCurve) {
+            counter++;
+            if (counter > 1000) {
+                fail("Infinite loop!");
+            }
+            ;
+            //System.out.println(vec);
+        }
+
+    }
+
+    @Ignore
+    public void minecraftTestCommands() {
+        // General test
+        // /exploregalore drawbezierpath minecraft:blue_wool ~ ~ ~ ~100 ~200 ~ ~ ~150 ~ ~20 ~ ~
+
+        // Testing 6-connectivity
+        // /exploregalore drawbezierpath minecraft:blue_wool ~ ~ ~ ~100 ~200 ~100 ~ ~150 ~ ~20 ~ ~30
     }
 }
