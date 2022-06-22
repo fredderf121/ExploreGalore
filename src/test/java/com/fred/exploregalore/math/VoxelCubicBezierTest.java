@@ -37,12 +37,13 @@ public class VoxelCubicBezierTest {
     public void instantiateIterator() {
         val testCurve = new VoxelCubicBezier(
                 new Vec3i(0, 0, 0),
-                new Vec3i(0, 30, 0),
-                new Vec3i(30, 30, 0),
-                new Vec3i(30, 0, 0));
+                new Vec3i(5, 0, 0),
+                new Vec3i(0, 0, 0),
+                new Vec3i(5, 0, 0));
 
         for (val vec : testCurve) {
-            System.out.println(vec);
+            ;
+            //System.out.println(vec);
         }
 
     }

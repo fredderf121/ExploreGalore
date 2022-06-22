@@ -47,10 +47,10 @@ public class LinearPathDrawer {
     // TODO: Refactor into one method!
     public static int drawCubicBezierBlockPath(ServerLevel serverLevel, Block block,
                                                BlockPos P0, BlockPos P1, BlockPos P2, BlockPos P3) {
-        ExploreGalore.LOGGER.info("Explore Galore 'drawblockpath' Command Execute Success!");
+        ExploreGalore.LOGGER.debug("Executing drawCubicBezierBlockPath");
 
-        for (val blockPos : new VoxelCubicBezier(P0, P1, P2, P3)) {
-            if (!tryPlacingBlock(serverLevel, (BlockPos) blockPos, block)) {
+        for (val voxelPos : new VoxelCubicBezier(P0, P1, P2, P3)) {
+            if (!tryPlacingBlock(serverLevel, new BlockPos(voxelPos), block)) {
 //                throw DrawBlockPathCommand.ERROR_FAILED.create();
                 throw new RuntimeException("Failed to draw block, TODO handle");
             }

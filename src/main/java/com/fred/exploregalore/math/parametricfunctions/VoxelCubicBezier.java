@@ -176,29 +176,38 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
 
 
             // Calculating the next voxel before returning the current one.
-            if (xForwardDifferencesScaled[0] > N_CUBED) {
-                currentVoxel = currentVoxel.offset(1, 0, 0);
-                xForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
-            } else if (xForwardDifferencesScaled[0] < -N_CUBED) {
-                currentVoxel = currentVoxel.offset(-1, 0, 0);
-                xForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
-            } else if (yForwardDifferencesScaled[0] > N_CUBED) {
-                currentVoxel = currentVoxel.offset(0, 1, 0);
-                yForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
-            } else if (yForwardDifferencesScaled[0] < -N_CUBED) {
-                currentVoxel = currentVoxel.offset(0, -1, 0);
-                yForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
-            } else if (zForwardDifferencesScaled[0] > N_CUBED) {
-                currentVoxel = currentVoxel.offset(0, 0, 1);
-                zForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
-            } else if (zForwardDifferencesScaled[0] < -N_CUBED) {
-                currentVoxel = currentVoxel.offset(0, 0, -1);
-                zForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
-            }
+            // We may need to repeat this multiple times as the step size is
+            // derived from the *maximum* first difference, meaning one round of updates
+            // may not be substantial enough to cause a step in any direction.
+            do {
+                if (xForwardDifferencesScaled[0] > N_CUBED) {
+                    currentVoxel = currentVoxel.offset(1, 0, 0);
+                    xForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
+                } else if (xForwardDifferencesScaled[0] < -N_CUBED) {
+                    currentVoxel = currentVoxel.offset(-1, 0, 0);
+                    xForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
+                }
+                if (yForwardDifferencesScaled[0] > N_CUBED) {
+                    currentVoxel = currentVoxel.offset(0, 1, 0);
+                    yForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
+                } else if (yForwardDifferencesScaled[0] < -N_CUBED) {
+                    currentVoxel = currentVoxel.offset(0, -1, 0);
+                    yForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
+                }
+                if (zForwardDifferencesScaled[0] > N_CUBED) {
+                    currentVoxel = currentVoxel.offset(0, 0, 1);
+                    zForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
+                } else if (zForwardDifferencesScaled[0] < -N_CUBED) {
+                    currentVoxel = currentVoxel.offset(0, 0, -1);
+                    zForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
+                }
 
-            updateForwardDifferences(xForwardDifferencesScaled);
-            updateForwardDifferences(yForwardDifferencesScaled);
-            updateForwardDifferences(zForwardDifferencesScaled);
+                updateForwardDifferences(xForwardDifferencesScaled);
+                updateForwardDifferences(yForwardDifferencesScaled);
+                updateForwardDifferences(zForwardDifferencesScaled);
+            } while (currentVoxel.equals(returnVoxel));
+
+            log.debug("Next voxel position: {}", returnVoxel);
 
             return returnVoxel;
         }
@@ -258,12 +267,12 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
          * for each coordinate axis. Dimensions (4 rows x 3 cols). Column 0 = x, 1 = y, 2 = z.
          */
         private SimpleMatrix forwardDifferenceMatrixAtZero() {
-            // Matrix G in the paper.
+            // Matrix G in the paper with a relative offset so that P0 is at (0, 0, 0).
             val controlPointsMatrix = new SimpleMatrix(new double[][]{
-                    Vec3iUtils.toDoubleArray(P0),
-                    Vec3iUtils.toDoubleArray(P1),
-                    Vec3iUtils.toDoubleArray(P2),
-                    Vec3iUtils.toDoubleArray(P3),
+                    Vec3iUtils.toDoubleArray(P0.subtract(P0)),
+                    Vec3iUtils.toDoubleArray(P1.subtract(P0)),
+                    Vec3iUtils.toDoubleArray(P2.subtract(P0)),
+                    Vec3iUtils.toDoubleArray(P3.subtract(P0)),
             });
 
             // The matrix for the forward differences of the polynomial t^3 + t^2 + t + 1 with unity coefficients,
