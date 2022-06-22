@@ -1,5 +1,6 @@
 package com.fred.exploregalore.commands;
 
+import com.fred.exploregalore.ExploreGalore;
 import com.fred.exploregalore.drawing.LinearPathDrawer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -48,7 +49,7 @@ public class DrawBlockPathCommand {
      *     </li>
      *     <li>
      *         The builder starts with the first word in our command, "exploregalore". This
-     *         is done using {@link LiteralArgumentBuilder#literal}.
+     *         is done using {@link LiteralArgumentBuilder#literal(String)}.
      *     </li>
      *     <li>
      *         We continue building our command using {@code .then()}. As the name suggests,
@@ -82,7 +83,7 @@ public class DrawBlockPathCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 
         dispatcher.register(
-                LiteralArgumentBuilder.<CommandSourceStack>literal("exploregalore")
+                LiteralArgumentBuilder.<CommandSourceStack>literal(ExploreGalore.MOD_ID)
                         .then(Commands.literal("drawblockpath")
                                 .requires(commandSourceStack -> commandSourceStack.hasPermission(Commands.LEVEL_GAMEMASTERS)) // Includes gamerule, setblock, gamemode
                                 .then(Commands.argument("block", BlockStateArgument.block())
@@ -97,6 +98,27 @@ public class DrawBlockPathCommand {
                                         )
                                 ))
         );
+
+        dispatcher.register(
+                LiteralArgumentBuilder.<CommandSourceStack>literal(ExploreGalore.MOD_ID)
+                        .then(Commands.literal("drawbezierpath")
+                                .requires(commandSourceStack -> commandSourceStack.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .then(Commands.argument("block", BlockStateArgument.block())
+                                        .then(Commands.argument("P0", BlockPosArgument.blockPos())
+                                                .then(Commands.argument("P1", BlockPosArgument.blockPos())
+                                                        .then(Commands.argument("P2", BlockPosArgument.blockPos())
+                                                                .then(Commands.argument("P3", BlockPosArgument.blockPos())
+                                                                        .executes(context ->
+                                                                                LinearPathDrawer.drawCubicBezierBlockPath(
+                                                                                        context.getSource().getLevel(),
+                                                                                        BlockStateArgument.getBlock(context, "block").getState().getBlock(),
+                                                                                        BlockPosArgument.getSpawnablePos(context, "P0"),
+                                                                                        BlockPosArgument.getSpawnablePos(context, "P1"),
+                                                                                        BlockPosArgument.getSpawnablePos(context, "P2"),
+                                                                                        BlockPosArgument.getSpawnablePos(context, "P3")))
+                                                                )))))
+
+                        ));
 
     }
 

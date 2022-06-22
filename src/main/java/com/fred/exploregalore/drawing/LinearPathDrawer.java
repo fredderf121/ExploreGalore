@@ -3,8 +3,11 @@ package com.fred.exploregalore.drawing;
 import com.fred.exploregalore.ExploreGalore;
 import com.fred.exploregalore.commands.DrawBlockPathCommand;
 import com.fred.exploregalore.math.PathBuilder;
+import com.fred.exploregalore.math.parametricfunctions.VoxelCubicBezier;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.core.BlockPos;
@@ -14,6 +17,7 @@ import net.minecraft.world.Clearable;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+@Log4j2
 public class LinearPathDrawer {
 
 
@@ -27,6 +31,26 @@ public class LinearPathDrawer {
                 .getBlockPath();
         for (BlockPos blockPos : path) {
             if (!tryPlacingBlock(serverLevel, blockPos, block)) {
+//                throw DrawBlockPathCommand.ERROR_FAILED.create();
+                throw new RuntimeException("Failed to draw block, TODO handle");
+            }
+        }
+
+//        commandSourceStack.sendSuccess(new TranslatableComponent("commands.drawblockpath.success"), true);
+//        return Command.SINGLE_SUCCESS;
+
+        return 0; // TODO
+
+
+    }
+
+    // TODO: Refactor into one method!
+    public static int drawCubicBezierBlockPath(ServerLevel serverLevel, Block block,
+                                               BlockPos P0, BlockPos P1, BlockPos P2, BlockPos P3) {
+        ExploreGalore.LOGGER.info("Explore Galore 'drawblockpath' Command Execute Success!");
+
+        for (val blockPos : new VoxelCubicBezier(P0, P1, P2, P3)) {
+            if (!tryPlacingBlock(serverLevel, (BlockPos) blockPos, block)) {
 //                throw DrawBlockPathCommand.ERROR_FAILED.create();
                 throw new RuntimeException("Failed to draw block, TODO handle");
             }
