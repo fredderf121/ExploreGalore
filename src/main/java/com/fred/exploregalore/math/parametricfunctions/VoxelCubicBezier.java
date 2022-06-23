@@ -171,50 +171,53 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
         public Vec3i next() {
             val returnVoxel = currentVoxel;
 
+            int debug_NumRepeatedUpdates = 0;
+
             // Calculating the next voxel before returning the current one.
             // We may need to repeat this multiple times as the step size is
             // derived from the *maximum* first difference, meaning one round of updates
             // may not be substantial enough to cause a step in any direction.
             do {
-                if (xForwardDifferencesScaled[0] > N_CUBED) {
-                    currentVoxel = currentVoxel.offset(1, 0, 0);
-                    xForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
-                    updateForwardDifferences(xForwardDifferencesScaled);
+                debug_NumRepeatedUpdates++;
+                // For 6-connectivity, we may only update one coordinate at a time, and so we always choose
+                // the largest to update.
+                if (Math.abs(xForwardDifferencesScaled[0]) > Math.abs(yForwardDifferencesScaled[0]) &&
+                        Math.abs(xForwardDifferencesScaled[0]) > Math.abs(zForwardDifferencesScaled[0])) {
+                    if (xForwardDifferencesScaled[0] > N_CUBED) {
+                        currentVoxel = currentVoxel.offset(1, 0, 0);
+                        xForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
 
-                } else if (xForwardDifferencesScaled[0] < -N_CUBED) {
-                    currentVoxel = currentVoxel.offset(-1, 0, 0);
-                    xForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
-                    updateForwardDifferences(xForwardDifferencesScaled);
+                    } else if (xForwardDifferencesScaled[0] < -N_CUBED) {
+                        currentVoxel = currentVoxel.offset(-1, 0, 0);
+                        xForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
+                    }
+                } else if (Math.abs(yForwardDifferencesScaled[0]) > Math.abs(zForwardDifferencesScaled[0])) {
+                    if (yForwardDifferencesScaled[0] > N_CUBED) {
+                        currentVoxel = currentVoxel.offset(0, 1, 0);
+                        yForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
 
-                } else if (yForwardDifferencesScaled[0] > N_CUBED) {
-                    currentVoxel = currentVoxel.offset(0, 1, 0);
-                    yForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
-                    updateForwardDifferences(yForwardDifferencesScaled);
-
-                } else if (yForwardDifferencesScaled[0] < -N_CUBED) {
-                    currentVoxel = currentVoxel.offset(0, -1, 0);
-                    yForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
-                    updateForwardDifferences(yForwardDifferencesScaled);
-
-                } else if (zForwardDifferencesScaled[0] > N_CUBED) {
-                    currentVoxel = currentVoxel.offset(0, 0, 1);
-                    zForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
-                    updateForwardDifferences(zForwardDifferencesScaled);
-
-                } else if (zForwardDifferencesScaled[0] < -N_CUBED) {
-                    currentVoxel = currentVoxel.offset(0, 0, -1);
-                    zForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
-                    updateForwardDifferences(zForwardDifferencesScaled);
+                    } else if (yForwardDifferencesScaled[0] < -N_CUBED) {
+                        currentVoxel = currentVoxel.offset(0, -1, 0);
+                        yForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
+                    }
                 } else {
-                    updateForwardDifferences(xForwardDifferencesScaled);
-                    updateForwardDifferences(yForwardDifferencesScaled);
-                    updateForwardDifferences(zForwardDifferencesScaled);
+                    if (zForwardDifferencesScaled[0] > N_CUBED) {
+                        currentVoxel = currentVoxel.offset(0, 0, 1);
+                        zForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
 
+                    } else if (zForwardDifferencesScaled[0] < -N_CUBED) {
+                        currentVoxel = currentVoxel.offset(0, 0, -1);
+                        zForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
+                    }
                 }
 
+                updateForwardDifferences(xForwardDifferencesScaled);
+                updateForwardDifferences(yForwardDifferencesScaled);
+                updateForwardDifferences(zForwardDifferencesScaled);
             } while (currentVoxel.equals(returnVoxel));
 
             log.debug("Next voxel position: {}", returnVoxel);
+            log.trace("The loop required {} iterations to find the next step", debug_NumRepeatedUpdates);
 
             return returnVoxel;
         }
