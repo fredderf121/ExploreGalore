@@ -2,7 +2,12 @@ package com.fred.exploregalore.client.event;
 
 import com.fred.exploregalore.ExploreGalore;
 import com.fred.exploregalore.client.Keybinds;
+import com.fred.exploregalore.item.ExploreGaloreItems;
+import com.fred.exploregalore.network.ExploreGaloreNetwork;
+import com.fred.exploregalore.network.message.KeybindMessage;
+import lombok.val;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
@@ -43,10 +48,17 @@ public final class ClientForgeEvents {
         if (minecraft.screen != null) {
             return;
         }
+        val localPlayer = minecraft.player;
+        // I can't see when the player can ever be null in this scenario, but the IDE complains.
+        if (localPlayer == null) {
+            return;
+        }
         if (action == GLFW.GLFW_PRESS) {
             if (key == Keybinds.BUILDERS_WAND_SWITCH_MODE.getKey().getValue()) {
-                // 'true' as second argument shows a pop-up message; 'false' shows in chat.
-                minecraft.player.displayClientMessage(new TextComponent("Key was pressed"), true);
+                // Sending info to server to trigger a building wand switch mode.
+                if (localPlayer.getMainHandItem().is(ExploreGaloreItems.BUILDERS_WAND.get())) {
+                    ExploreGaloreNetwork.CHANNEL.sendToServer(new KeybindMessage(key));
+                }
             }
         }
 

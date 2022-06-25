@@ -1,15 +1,20 @@
 package com.fred.exploregalore.item;
 
 import com.fred.exploregalore.drawing.LinearPathDrawer;
+import com.fred.exploregalore.network.ExploreGaloreNetwork;
 import com.fred.exploregalore.utils.CompoundTagUtils;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -25,6 +30,15 @@ public class BuildersWand extends Item {
 
     public BuildersWand() {
         super(new Properties().stacksTo(1).tab(CreativeModeTab.TAB_MISC));
+    }
+
+    public static void toggleBuildingMode(ServerPlayer player) {
+        val heldItem = player.getMainHandItem();
+
+        if (heldItem.is(ExploreGaloreItems.BUILDERS_WAND.get())) {
+            // 'true' as second argument shows a pop-up message; 'false' shows in chat.
+            player.displayClientMessage(new TextComponent("Key was pressed, todo personalized message for switching wand mode!"), true);
+        }
     }
 
     /**

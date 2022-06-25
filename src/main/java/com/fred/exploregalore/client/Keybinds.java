@@ -15,6 +15,7 @@ public final class Keybinds {
     public static final KeyMapping BUILDERS_WAND_SWITCH_MODE = registerKey("builders_wand_switch_mode", InputConstants.KEY_X, EXPLORE_GALORE_KEY_CATEGORY);
 
 
+
     public static void initializeKeyMappings() {
         // Lazily initializes the static values of the class; allows for final values
     }
