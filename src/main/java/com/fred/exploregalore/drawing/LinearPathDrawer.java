@@ -14,13 +14,12 @@ public enum LinearPathDrawer implements PathDrawer{
 
     INSTANCE;
 
-    private static final int NUM_REQUIRED_CONFIG_POS = 2;
 
     @Override
     public void drawPath(ServerLevel serverLevel, Block block, BlockPos... configurationPos) throws IllegalArgumentException {
 
-        if (configurationPos.length != NUM_REQUIRED_CONFIG_POS) {
-            throw new IllegalArgumentException("The path requires " + NUM_REQUIRED_CONFIG_POS + " configuration BlockPos, but " +
+        if (configurationPos.length != numRequiredConfigurationPos()) {
+            throw new IllegalArgumentException("The path requires " + numRequiredConfigurationPos() + " configuration BlockPos, but " +
                     "was provided " + configurationPos.length + ".");
         }
 
@@ -36,6 +35,11 @@ public enum LinearPathDrawer implements PathDrawer{
 
         ExploreGalore.LOGGER.info("Successfully drew a linear path.");
 
+    }
+
+    @Override
+    public int numRequiredConfigurationPos() {
+        return 2;
     }
 
 

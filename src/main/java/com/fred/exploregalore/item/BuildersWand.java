@@ -1,16 +1,17 @@
 package com.fred.exploregalore.item;
 
+import com.fred.exploregalore.ExploreGalore;
 import com.fred.exploregalore.drawing.CubicBezierPathDrawer;
 import com.fred.exploregalore.drawing.LinearPathDrawer;
 import com.fred.exploregalore.drawing.PathDrawer;
-import com.fred.exploregalore.network.ExploreGaloreNetwork;
-import com.fred.exploregalore.utils.CompoundTagUtils;
-import com.mojang.datafixers.util.Function3;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,21 +27,20 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.network.NetworkHooks;
-
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 @Slf4j
 public class BuildersWand extends Item {
 
     private static final String IS_STARTING_BLOCK_SET_TAG_NAME = "is_starting_block_set";
 
+    private static final String BLOCK_POS_LIST_TAG_NAME = "positions";
+    private static final byte BLOCK_POS_LIST_TAG_TYPE = Tag.TAG_COMPOUND;
+
     @AllArgsConstructor
     private enum Mode {
+        // TODO: Move strings to language files.
         LINEAR(LinearPathDrawer.INSTANCE, "Linear"),
-        CUBIC_BEZIER(CubicBezierPathDrawer.INSTANCE, "Cubic Bézier");
+        CUBIC_BEZIER(CubicBezierPathDrawer.INSTANCE, "Cubic Bezier");
 
         public static final String TAG_NAME = "mode";
 
@@ -51,12 +51,20 @@ public class BuildersWand extends Item {
 
         private static final Mode[] modes = Mode.values();
 
-        public static Mode getFromOrdinal(int ordinal) {
+        public static Mode fromOrdinal(int ordinal) {
             return modes[ordinal];
         }
 
         public static int numModes() {
             return modes.length;
+        }
+
+        public int numRequiredBlockPos() {
+            return pathDrawer.numRequiredConfigurationPos();
+        }
+
+        public void drawPath(ServerLevel serverLevel, Block block, BlockPos... configurationPos) {
+            pathDrawer.drawPath(serverLevel, block, configurationPos);
         }
 
 
@@ -90,7 +98,7 @@ public class BuildersWand extends Item {
 
         // TODO: Put this into the en_us language file.
         // 'true' as second argument shows a pop-up message; 'false' shows in chat.
-        player.displayClientMessage(new TextComponent("Switched drawing mode to " + Mode.getFromOrdinal(nextMode)), true);
+        player.displayClientMessage(new TextComponent("Switched drawing mode to " + Mode.fromOrdinal(nextMode)), true);
 
     }
 
@@ -105,16 +113,30 @@ public class BuildersWand extends Item {
         Player player = useOnContext.getPlayer();
         Level level = useOnContext.getLevel();
 
+
         if (level.isClientSide() || player == null) return InteractionResult.SUCCESS;
 
         // We want to set the position of the block beside/on-top-of the right-clicked block.
-        val blockPlaceContext = new BlockPlaceContext(useOnContext);
-
         val itemStack = useOnContext.getItemInHand();
+        val wandTag = itemStack.getOrCreateTag();
 
-        val updatedTag = updateTagWithNewPosAndTryDrawing(itemStack.getOrCreateTag() ,(ServerLevel) level, blockPlaceContext.getClickedPos());
+        int numSavedPositions = addNewPosToTag(wandTag, new BlockPlaceContext(useOnContext).getClickedPos());
 
-        itemStack.setTag(updatedTag);
+        val drawingMode = Mode.fromOrdinal(wandTag.getInt(Mode.TAG_NAME));
+
+        // Draw the path if the number of saved blockPos is met
+        if (numSavedPositions == drawingMode.numRequiredBlockPos()) {
+            BlockPos[] positions = wandTag.getList(BLOCK_POS_LIST_TAG_NAME, BLOCK_POS_LIST_TAG_TYPE)
+                    .stream()
+                    .map(tag -> NbtUtils.readBlockPos((CompoundTag) tag))
+                    .toArray(BlockPos[]::new);
+
+
+            drawingMode.drawPath((ServerLevel) level, Blocks.LIME_WOOL, positions);
+
+            // Clearing the list of blockPos since we're finished drawing.
+            wandTag.put(BLOCK_POS_LIST_TAG_NAME, new ListTag());
+        }
 
         return InteractionResult.SUCCESS;
 
@@ -126,9 +148,21 @@ public class BuildersWand extends Item {
         return super.use(p_41432_, p_41433_, p_41434_);
     }
 
-    private CompoundTag updateTagWithNewPosAndTryDrawing(CompoundTag wandTag,
-                                                         ServerLevel serverLevel,
-                                                         BlockPos newlyClickedPos) {
+    private int addNewPosToTag(CompoundTag wandTag,
+                               BlockPos newlyClickedPos) {
+        // The second integer is for the type of the list (in this case a BlockPos tag is a CompoundTag).
+        val listOfBlockPosConfig = wandTag.getList(BLOCK_POS_LIST_TAG_NAME, BLOCK_POS_LIST_TAG_TYPE);
+        listOfBlockPosConfig.add(NbtUtils.writeBlockPos(newlyClickedPos));
+        wandTag.put(BLOCK_POS_LIST_TAG_NAME, listOfBlockPosConfig);
+
+        ExploreGalore.LOGGER.debug(wandTag.toString());
+
+        return listOfBlockPosConfig.size();
+    }
+
+/*    private CompoundTag addNewPosToTag(CompoundTag wandTag,
+                                       ServerLevel serverLevel,
+                                       BlockPos newlyClickedPos) {
         return Optional.of(wandTag)
                 // We check if the tag has the starting block set ...
                 .filter(compoundTag -> compoundTag.getBoolean(IS_STARTING_BLOCK_SET_TAG_NAME))
@@ -144,5 +178,5 @@ public class BuildersWand extends Item {
                 })
                 // ... if not, then the first block has not been set, and we create a tag with the just-clicked blockPos
                 .orElse(CompoundTagUtils.createBlockPosCompoundTag(IS_STARTING_BLOCK_SET_TAG_NAME, newlyClickedPos));
-    }
+    }*/
 }

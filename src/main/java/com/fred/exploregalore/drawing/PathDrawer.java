@@ -18,6 +18,8 @@ public interface PathDrawer {
      */
     void drawPath(ServerLevel serverLevel, Block block, BlockPos... configurationPos) throws IllegalArgumentException;
 
+    int numRequiredConfigurationPos();
+
 
     static boolean tryPlacingBlock(ServerLevel serverLevel, BlockPos blockPos, Block blockToPlace) {
         // If the existing block at blockPos is a BlockEntity, we want to first remove its

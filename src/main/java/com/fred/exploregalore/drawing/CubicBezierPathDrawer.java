@@ -10,13 +10,10 @@ import net.minecraft.world.level.block.Block;
 public enum CubicBezierPathDrawer implements PathDrawer {
     INSTANCE;
 
-    private static final int NUM_REQUIRED_CONFIG_POS = 4;
-
-
     @Override
     public void drawPath(ServerLevel serverLevel, Block block, BlockPos... configurationPos) throws IllegalArgumentException {
-        if (configurationPos.length != NUM_REQUIRED_CONFIG_POS) {
-            throw new IllegalArgumentException("The path requires " + NUM_REQUIRED_CONFIG_POS + " configuration BlockPos, but " +
+        if (configurationPos.length != numRequiredConfigurationPos()) {
+            throw new IllegalArgumentException("The path requires " + numRequiredConfigurationPos() + " configuration BlockPos, but " +
                     "was provided " + configurationPos.length + ".");
         }
 
@@ -27,5 +24,10 @@ public enum CubicBezierPathDrawer implements PathDrawer {
         }
 
         ExploreGalore.LOGGER.debug("Successfully executed drawCubicBezierBlockPath");
+    }
+
+    @Override
+    public int numRequiredConfigurationPos() {
+        return 4;
     }
 }
