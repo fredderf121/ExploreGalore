@@ -1,6 +1,7 @@
 package com.fred.exploregalore.commands;
 
 import com.fred.exploregalore.ExploreGalore;
+import com.fred.exploregalore.drawing.CubicBezierPathDrawer;
 import com.fred.exploregalore.drawing.LinearPathDrawer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -26,6 +27,9 @@ import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
 
+/**
+ * These commands should only be used for debugging at the moment.
+ */
 public class DrawBlockPathCommand {
 
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(new TranslatableComponent("commands.drawblockpath.failed"));
@@ -89,11 +93,15 @@ public class DrawBlockPathCommand {
                                 .then(Commands.argument("block", BlockStateArgument.block())
                                         .then(Commands.argument("startPos", BlockPosArgument.blockPos())
                                                 .then(Commands.argument("endPos", BlockPosArgument.blockPos())
-                                                        .executes(context -> LinearPathDrawer.drawBlockPath(
-                                                                context.getSource().getLevel(),
-                                                                BlockStateArgument.getBlock(context, "block").getState().getBlock(),
-                                                                BlockPosArgument.getSpawnablePos(context, "startPos"),
-                                                                BlockPosArgument.getSpawnablePos(context, "endPos")))
+                                                        .executes(context -> {
+                                                            LinearPathDrawer.INSTANCE.drawPath(
+                                                                    context.getSource().getLevel(),
+                                                                    BlockStateArgument.getBlock(context, "block").getState().getBlock(),
+                                                                    BlockPosArgument.getSpawnablePos(context, "startPos"),
+                                                                    BlockPosArgument.getSpawnablePos(context, "endPos"));
+                                                            return 0; // The function called is a void function.
+
+                                                        })
                                                 )
                                         )
                                 ))
@@ -109,13 +117,16 @@ public class DrawBlockPathCommand {
                                                         .then(Commands.argument("P2", BlockPosArgument.blockPos())
                                                                 .then(Commands.argument("P3", BlockPosArgument.blockPos())
                                                                         .executes(context ->
-                                                                                LinearPathDrawer.drawCubicBezierBlockPath(
-                                                                                        context.getSource().getLevel(),
-                                                                                        BlockStateArgument.getBlock(context, "block").getState().getBlock(),
-                                                                                        BlockPosArgument.getSpawnablePos(context, "P0"),
-                                                                                        BlockPosArgument.getSpawnablePos(context, "P1"),
-                                                                                        BlockPosArgument.getSpawnablePos(context, "P2"),
-                                                                                        BlockPosArgument.getSpawnablePos(context, "P3")))
+                                                                        {
+                                                                            CubicBezierPathDrawer.INSTANCE.drawPath(
+                                                                                    context.getSource().getLevel(),
+                                                                                    BlockStateArgument.getBlock(context, "block").getState().getBlock(),
+                                                                                    BlockPosArgument.getSpawnablePos(context, "P0"),
+                                                                                    BlockPosArgument.getSpawnablePos(context, "P1"),
+                                                                                    BlockPosArgument.getSpawnablePos(context, "P2"),
+                                                                                    BlockPosArgument.getSpawnablePos(context, "P3"));
+                                                                            return 0; // The function called is a void function, so we must return a temp value.
+                                                                        })
                                                                 )))))
 
                         ));

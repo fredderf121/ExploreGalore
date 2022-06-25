@@ -78,6 +78,10 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
 
     }
 
+    public VoxelCubicBezier(Vec3i ... configurationPoints) {
+        this(configurationPoints[0], configurationPoints[1], configurationPoints[2], configurationPoints[3]);
+    }
+
 
     /**
      * Calculates B'(t), at different values of t for each direction.

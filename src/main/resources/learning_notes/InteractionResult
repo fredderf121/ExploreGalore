@@ -1,0 +1,13 @@
+in the context of using items on blocks, specifically
+* SUCCESS, CONSUME, CONSUME_PARTIAL, and FAIL will prevent further types of interaction attempts when provided from useItemFirst
+* SUCCESS, CONSUME, and CONSUME_PARTIAL will trigger advancements on the server (except in the useItemFirst), and will also prevent the item interaction from occurring if provided during the block's use interaction.
+* SUCCESS will trigger the arm-swinging mechanic.
+* PASS will always allow proceeding to the next phase.
+
+for using items on nothing, it's similar but consume increments statistics and consume_partial doesn't IIRC
+
+difference between success and consume is that success triggers the arm-swing mechanic and consume/fail doesn't
+
+difference between success/consume and fail is that fail doesn't trigger advancements
+
+PASS means "relinquish my dibs on this interaction"
