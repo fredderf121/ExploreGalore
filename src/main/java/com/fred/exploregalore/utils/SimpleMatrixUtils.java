@@ -1,4 +1,4 @@
-package com.fred.exploregalore.math.utils;
+package com.fred.exploregalore.utils;
 
 import org.ejml.simple.SimpleMatrix;
 

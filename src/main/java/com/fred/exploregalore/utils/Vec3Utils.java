@@ -1,4 +1,4 @@
-package com.fred.exploregalore.math.utils;
+package com.fred.exploregalore.utils;
 
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.math.NumberUtils;

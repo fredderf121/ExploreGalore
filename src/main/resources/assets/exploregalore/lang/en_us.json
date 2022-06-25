@@ -1,5 +1,8 @@
 {
   "commands.drawblockpath.success": "Explore Galore: Command drawblockpath success!",
   "commands.drawblockpath.failed": "Explore Galore: Command drawblockpath failed!",
-  "item.exploregalore.builders_wand" : "Builder's Wand"
+  "item.exploregalore.builders_wand" : "Builder's Wand",
+
+  "key.category.exploregalore" : "Explore Galore",
+  "key.exploregalore.builders_wand_switch_mode": "Builder's Wand Switch Mode"
 }

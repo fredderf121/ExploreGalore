@@ -4,32 +4,33 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.function.DoubleUnaryOperator;
 
-public class HelixParametricFunction extends ParametricFunction{
+public class HelixParametricFunction extends ParametricFunction {
     public HelixParametricFunction(IndependentVariable independentVariable, DoubleUnaryOperator xFunc, DoubleUnaryOperator yFunc, DoubleUnaryOperator zFunc, double startT, double endT) {
         super(independentVariable, xFunc, yFunc, zFunc, startT, endT);
     }
 
     /**
      * <p>
-     *     A note about accuracy:
+     * A note about accuracy:
      * </p>
      * <p>
-     *     A helix function is generally defined as {@code f(t) = <cos(t), sin(t), t>}, where polar coordinates are used.
-     *     Converting this to cartesian coordinates, we obtain {@code f(x) = <x, sqrt(1-x^2), arccos(x)} (which only
-     *     represents a half-helix due to the square root and arccosine).
+     * A helix function is generally defined as {@code f(t) = <cos(t), sin(t), t>}, where polar coordinates are used.
+     * Converting this to cartesian coordinates, we obtain {@code f(x) = <x, sqrt(1-x^2), arccos(x)} (which only
+     * represents a half-helix due to the square root and arccosine).
      * </p>
      * <p>
-     *     In this implementation, we have instead decided to go with the helix formula
-     *     {@code f(x) = <x, sqrt(1-x^2), x>}. While this does not produce as "curvy" of a helix, it is sufficient for
-     *     our purposes, as our function is used to create a block path, with has a large margin for error.
+     * In this implementation, we have instead decided to go with the helix formula
+     * {@code f(x) = <x, sqrt(1-x^2), x>}. While this does not produce as "curvy" of a helix, it is sufficient for
+     * our purposes, as our function is used to create a block path, with has a large margin for error.
      * </p>
+     *
      * @param startPoint
      * @param endPoint
      * @param radius
      * @param numSpirals
      * @return
      */
-    public static HelixParametricFunction createHelixParametricFunction (
+    public static HelixParametricFunction createHelixParametricFunction(
             Vec3 startPoint, Vec3 endPoint, double radius, int numSpirals
     ) {
 

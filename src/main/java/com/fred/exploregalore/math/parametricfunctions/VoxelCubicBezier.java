@@ -1,9 +1,9 @@
 package com.fred.exploregalore.math.parametricfunctions;
 
-import com.fred.exploregalore.math.utils.ArrayUtils;
-import com.fred.exploregalore.math.utils.SimpleMatrixUtils;
-import com.fred.exploregalore.math.utils.Vec3Utils;
-import com.fred.exploregalore.math.utils.Vec3iUtils;
+import com.fred.exploregalore.utils.ArrayUtils;
+import com.fred.exploregalore.utils.SimpleMatrixUtils;
+import com.fred.exploregalore.utils.Vec3Utils;
+import com.fred.exploregalore.utils.Vec3iUtils;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectFunction;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
