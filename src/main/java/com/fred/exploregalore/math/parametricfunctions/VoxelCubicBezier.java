@@ -14,7 +14,6 @@ import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.function.DoublePredicate;
 
 /**
@@ -129,10 +128,14 @@ public class VoxelCubicBezier implements VoxelSequence {
         private long[] zForwardDifferencesScaled;
 
         private Vec3i currentVoxel;
+        private Vec3i nextVoxel;
 
 
         public VoxelCubicBezierIterator() {
-            currentVoxel = P0;
+            // Setting currentVoxel to an 'invalid' value. This is equivalent to
+            // 'one-before-the-first' (similar and opposite to one-past-the-end).
+            currentVoxel = new Vec3i(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+            nextVoxel = P0;
 
             val maxFirstDerivativeAbs = maxFirstDerivativeAbs();
 
@@ -156,26 +159,15 @@ public class VoxelCubicBezier implements VoxelSequence {
         }
 
 
-        /**
-         * Toggle variable for the {@link #hasNext()} method since we need to return
-         * both the P0 and P3 <b>inclusive</b>.
-         */
-        private boolean hasComputedLastVoxel = false;
 
         @Override
         public boolean hasNext() {
-            if (hasComputedLastVoxel) {
-                return false;
-            }
-            if (currentVoxel.equals(P3)) {
-                hasComputedLastVoxel = true;
-            }
-            return true;
+            return !currentVoxel.equals(P3);
         }
 
         @Override
         public Vec3i next() {
-            val returnVoxel = currentVoxel;
+            currentVoxel = nextVoxel;
 
             int debug_NumRepeatedUpdates = 0;
 
@@ -190,29 +182,29 @@ public class VoxelCubicBezier implements VoxelSequence {
                 if (Math.abs(xForwardDifferencesScaled[0]) > Math.abs(yForwardDifferencesScaled[0]) &&
                         Math.abs(xForwardDifferencesScaled[0]) > Math.abs(zForwardDifferencesScaled[0])) {
                     if (xForwardDifferencesScaled[0] > N_CUBED) {
-                        currentVoxel = currentVoxel.offset(1, 0, 0);
+                        nextVoxel = nextVoxel.offset(1, 0, 0);
                         xForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
 
                     } else if (xForwardDifferencesScaled[0] < -N_CUBED) {
-                        currentVoxel = currentVoxel.offset(-1, 0, 0);
+                        nextVoxel = nextVoxel.offset(-1, 0, 0);
                         xForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
                     }
                 } else if (Math.abs(yForwardDifferencesScaled[0]) > Math.abs(zForwardDifferencesScaled[0])) {
                     if (yForwardDifferencesScaled[0] > N_CUBED) {
-                        currentVoxel = currentVoxel.offset(0, 1, 0);
+                        nextVoxel = nextVoxel.offset(0, 1, 0);
                         yForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
 
                     } else if (yForwardDifferencesScaled[0] < -N_CUBED) {
-                        currentVoxel = currentVoxel.offset(0, -1, 0);
+                        nextVoxel = nextVoxel.offset(0, -1, 0);
                         yForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
                     }
                 } else {
                     if (zForwardDifferencesScaled[0] > N_CUBED) {
-                        currentVoxel = currentVoxel.offset(0, 0, 1);
+                        nextVoxel = nextVoxel.offset(0, 0, 1);
                         zForwardDifferencesScaled[0] -= N_DOUBLED_CUBED;
 
                     } else if (zForwardDifferencesScaled[0] < -N_CUBED) {
-                        currentVoxel = currentVoxel.offset(0, 0, -1);
+                        nextVoxel = nextVoxel.offset(0, 0, -1);
                         zForwardDifferencesScaled[0] += N_DOUBLED_CUBED;
                     }
                 }
@@ -220,12 +212,12 @@ public class VoxelCubicBezier implements VoxelSequence {
                 updateForwardDifferences(xForwardDifferencesScaled);
                 updateForwardDifferences(yForwardDifferencesScaled);
                 updateForwardDifferences(zForwardDifferencesScaled);
-            } while (currentVoxel.equals(returnVoxel));
+            } while (nextVoxel.equals(currentVoxel));
 
-            log.debug("Next voxel position: {}", returnVoxel);
+            log.debug("Next voxel position: {}", currentVoxel);
             log.trace("The loop required {} iterations to find the next step", debug_NumRepeatedUpdates);
 
-            return returnVoxel;
+            return currentVoxel;
         }
 
         /**
