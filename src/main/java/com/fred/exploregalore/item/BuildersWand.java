@@ -142,6 +142,7 @@ public class BuildersWand extends Item {
 
     }
 
+    // TODO: Add functionality for right-clicking in the air (like an angel block)
     @Override
     public InteractionResultHolder<ItemStack> use(Level p_41432_, Player p_41433_, InteractionHand p_41434_) {
         log.debug("use triggered!");

@@ -26,7 +26,7 @@ import java.util.function.DoublePredicate;
  *     Efficient Algorithms for 3D Scan-Conversion of Parametric Curves, Surfaces, and Volumes </a></p>
  */
 @Log4j2
-public class VoxelCubicBezier implements Iterable<Vec3i> {
+public class VoxelCubicBezier implements VoxelSequence {
 
     /**
      * Matrix {@code 'M'} in the referred paper. This matrix, multiplied by the control-point
@@ -39,6 +39,8 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
             {-3, 3, 0, 0},
             {1, 0, 0, 0}
     });
+
+    public static final int NUM_CONFIGURATION_POINTS = 4;
 
 
     // The first anchor point.
@@ -97,7 +99,7 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
 
     @NotNull
     @Override
-    public Iterator<Vec3i> iterator() {
+    public VoxelSequenceIterator iterator() {
         return new VoxelCubicBezierIterator();
 
     }
@@ -105,7 +107,7 @@ public class VoxelCubicBezier implements Iterable<Vec3i> {
 
     // TODO: If the iterator for a given 4 points are used frequently and performance is bad,
     //  refactor the constants into another class so that they aren't calculated every time
-    private class VoxelCubicBezierIterator implements Iterator<Vec3i> {
+    private class VoxelCubicBezierIterator implements VoxelSequenceIterator {
 
 
         /**

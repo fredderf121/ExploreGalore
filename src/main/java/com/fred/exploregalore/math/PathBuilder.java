@@ -94,9 +94,10 @@ public class PathBuilder {
     }
 
 
-
-
-
+    /**
+     * Use {@link com.fred.exploregalore.math.parametricfunctions.VoxelLinear} instead.
+     */
+    @Deprecated
     public PathBuilder linearPath3D(BlockPos startPos, BlockPos endPos) {
 
         int distX = Math.abs(endPos.getX() - startPos.getX());
@@ -126,8 +127,6 @@ public class PathBuilder {
             } else {
                 iy++;
             }
-
-
 
             blockPosList.add(startPos.offset(dirX * ix, dirY * iy, dirZ * iz));
 

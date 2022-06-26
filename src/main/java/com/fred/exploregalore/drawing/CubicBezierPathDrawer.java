@@ -28,6 +28,6 @@ public enum CubicBezierPathDrawer implements PathDrawer {
 
     @Override
     public int numRequiredConfigurationPos() {
-        return 4;
+        return VoxelCubicBezier.NUM_CONFIGURATION_POINTS;
     }
 }
