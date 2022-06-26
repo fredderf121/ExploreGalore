@@ -16,8 +16,12 @@ public class LinearVoxelSequence implements VoxelSequence {
         this.endPoint = endPoint;
     }
 
-    public LinearVoxelSequence(Vec3i... configurationPoints) {
-        this(configurationPoints[0], configurationPoints[1]);
+    public static VoxelSequence configuredWith(Vec3i... configurationPoints) {
+        if (configurationPoints.length != NUM_CONFIGURATION_POINTS) {
+            throw new IllegalArgumentException("The path requires " + NUM_CONFIGURATION_POINTS + " configuration Vec3i, but " +
+                    "was provided " + configurationPoints.length + ".");
+        }
+        return new LinearVoxelSequence(configurationPoints[0], configurationPoints[1]);
     }
 
     @NotNull

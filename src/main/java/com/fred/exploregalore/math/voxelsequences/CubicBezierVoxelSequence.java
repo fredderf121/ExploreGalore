@@ -79,9 +79,14 @@ public class CubicBezierVoxelSequence implements VoxelSequence {
 
     }
 
-    public CubicBezierVoxelSequence(Vec3i ... configurationPoints) {
-        this(configurationPoints[0], configurationPoints[1], configurationPoints[2], configurationPoints[3]);
+    public static VoxelSequence configuredWith(Vec3i... configurationPoints) {
+        if (configurationPoints.length != NUM_CONFIGURATION_POINTS) {
+            throw new IllegalArgumentException("The path requires " + NUM_CONFIGURATION_POINTS + " configuration Vec3i, but " +
+                    "was provided " + configurationPoints.length + ".");
+        }
+        return new CubicBezierVoxelSequence(configurationPoints[0], configurationPoints[1], configurationPoints[2], configurationPoints[3]);
     }
+
 
 
     /**
@@ -138,7 +143,7 @@ public class CubicBezierVoxelSequence implements VoxelSequence {
          * the currentVoxel == P3 check would immediately terminate after only one block is placed.
          *
          * <p>
-         *     Here, we enforce that the number of voxels generated must be larger than 1
+         * Here, we enforce that the number of voxels generated must be larger than 1
          * </p>
          */
         private int numVoxelsGenerated;
@@ -172,7 +177,6 @@ public class CubicBezierVoxelSequence implements VoxelSequence {
                     Arrays.toString(zForwardDifferencesScaled));
 
         }
-
 
 
         @Override

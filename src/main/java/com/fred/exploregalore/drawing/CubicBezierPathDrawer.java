@@ -17,7 +17,7 @@ public enum CubicBezierPathDrawer implements PathDrawer {
                     "was provided " + configurationPos.length + ".");
         }
 
-        for (val voxelPos : new CubicBezierVoxelSequence(configurationPos)) {
+        for (val voxelPos : CubicBezierVoxelSequence.configuredWith(configurationPos)) {
             if (!PathDrawer.tryPlacingBlock(serverLevel, new BlockPos(voxelPos), block)) {
                 ExploreGalore.LOGGER.debug("tryPlacingBlock failed, likely due to the block already being there.");
             }
