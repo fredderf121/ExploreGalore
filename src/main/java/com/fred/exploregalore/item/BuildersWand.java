@@ -46,7 +46,7 @@ public class BuildersWand extends Item {
 
         public static final Mode DEFAULT_MODE = LINEAR;
 
-        private PathDrawer pathDrawer;
+        private final PathDrawer pathDrawer;
         private final String name;
 
         private static final Mode[] modes = Mode.values();
@@ -96,6 +96,9 @@ public class BuildersWand extends Item {
         int nextMode = (tag.getInt(Mode.TAG_NAME) + 1) % Mode.numModes();
         tag.putInt(Mode.TAG_NAME, nextMode);
 
+        // Clearing the previous list of BlockPos.
+        clearBlockPosList(tag);
+
         // TODO: Put this into the en_us language file.
         // 'true' as second argument shows a pop-up message; 'false' shows in chat.
         player.displayClientMessage(new TextComponent("Switched drawing mode to " + Mode.fromOrdinal(nextMode)), true);
@@ -135,7 +138,7 @@ public class BuildersWand extends Item {
             drawingMode.drawPath((ServerLevel) level, Blocks.LIME_WOOL, positions);
 
             // Clearing the list of blockPos since we're finished drawing.
-            wandTag.put(BLOCK_POS_LIST_TAG_NAME, new ListTag());
+            clearBlockPosList(wandTag);
         }
 
         return InteractionResult.SUCCESS;
@@ -161,23 +164,9 @@ public class BuildersWand extends Item {
         return listOfBlockPosConfig.size();
     }
 
-/*    private CompoundTag addNewPosToTag(CompoundTag wandTag,
-                                       ServerLevel serverLevel,
-                                       BlockPos newlyClickedPos) {
-        return Optional.of(wandTag)
-                // We check if the tag has the starting block set ...
-                .filter(compoundTag -> compoundTag.getBoolean(IS_STARTING_BLOCK_SET_TAG_NAME))
-                // ... if so, we take the most recently clicked on position, and use it to draw a line
-                .map(compoundTag -> {
-                    val posFrom = CompoundTagUtils.getBlockPosFromCompoundTag(compoundTag);
-                    val posTo = newlyClickedPos;
-                    log.debug("Drawing line from {} to {}", posFrom, posTo);
-                    LinearPathDrawer.INSTANCE.drawPath(serverLevel, Blocks.ACACIA_WOOD, posFrom, posTo);
-                    // We're done drawing the line, reset the state of the tag for the next sequence
-                    // To try to be as functional as possible, we don't mutate the old tag; we create a new one.
-                    return new CompoundTag();
-                })
-                // ... if not, then the first block has not been set, and we create a tag with the just-clicked blockPos
-                .orElse(CompoundTagUtils.createBlockPosCompoundTag(IS_STARTING_BLOCK_SET_TAG_NAME, newlyClickedPos));
-    }*/
+    private static void clearBlockPosList(CompoundTag wandTag) {
+        wandTag.put(BLOCK_POS_LIST_TAG_NAME, new ListTag());
+    }
+
+
 }

@@ -1,7 +1,6 @@
 package com.fred.exploregalore.learning_notes.removedCode;
 
-import com.fred.exploregalore.math.PathBuilder;
-import com.fred.exploregalore.math.parametricfunctions.ParametricFunction;
+import com.fred.exploregalore.math.voxelsequences.ParametricFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 

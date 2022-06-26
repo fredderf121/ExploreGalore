@@ -1,10 +1,6 @@
-package com.fred.exploregalore.math.parametricfunctions;
+package com.fred.exploregalore.math.voxelsequences;
 
 import net.minecraft.core.Vec3i;
-import net.minecraft.world.level.block.StructureBlock;
-import net.minecraft.world.level.levelgen.structure.StructureStart;
-
-import java.util.stream.Stream;
 
 /**
  * Marker class that indicates this class produces a sequence of voxel coordinates ({@link Vec3i})

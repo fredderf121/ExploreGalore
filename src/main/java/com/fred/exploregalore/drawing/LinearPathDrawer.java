@@ -1,9 +1,7 @@
 package com.fred.exploregalore.drawing;
 
 import com.fred.exploregalore.ExploreGalore;
-import com.fred.exploregalore.math.PathBuilder;
-import com.fred.exploregalore.math.parametricfunctions.VoxelCubicBezier;
-import com.fred.exploregalore.math.parametricfunctions.VoxelLinear;
+import com.fred.exploregalore.math.voxelsequences.LinearVoxelSequence;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import net.minecraft.core.BlockPos;
@@ -24,7 +22,7 @@ public enum LinearPathDrawer implements PathDrawer{
                     "was provided " + configurationPos.length + ".");
         }
 
-        for (val voxelPos : new VoxelLinear(configurationPos)) {
+        for (val voxelPos : new LinearVoxelSequence(configurationPos)) {
             if (!PathDrawer.tryPlacingBlock(serverLevel, new BlockPos(voxelPos), block)) {
                 log.debug("tryPlacingBlock failed, likely due to the block already being there.");
             }
@@ -36,7 +34,7 @@ public enum LinearPathDrawer implements PathDrawer{
 
     @Override
     public int numRequiredConfigurationPos() {
-        return VoxelLinear.NUM_CONFIGURATION_POINTS;
+        return LinearVoxelSequence.NUM_CONFIGURATION_POINTS;
     }
 
 

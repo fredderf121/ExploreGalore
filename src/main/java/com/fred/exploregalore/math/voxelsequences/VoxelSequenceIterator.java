@@ -1,4 +1,4 @@
-package com.fred.exploregalore.math.parametricfunctions;
+package com.fred.exploregalore.math.voxelsequences;
 
 import net.minecraft.core.Vec3i;
 

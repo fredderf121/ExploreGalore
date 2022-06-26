@@ -1,19 +1,15 @@
 package com.fred.exploregalore.math;
 
-import com.fred.exploregalore.math.parametricfunctions.VoxelCubicBezier;
-import lombok.extern.log4j.Log4j2;
+import com.fred.exploregalore.math.voxelsequences.CubicBezierVoxelSequence;
 import lombok.val;
 import net.minecraft.core.Vec3i;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.ejml.simple.SimpleMatrix;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openjdk.nashorn.internal.ir.annotations.Ignore;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class VoxelCubicBezierTest {
+public class CubicBezierVoxelSequenceTest {
 
 
 
@@ -38,7 +34,7 @@ public class VoxelCubicBezierTest {
 
     @Test
     public void instantiateIteratorSimpleOneDimension() {
-        val testCurve = new VoxelCubicBezier(
+        val testCurve = new CubicBezierVoxelSequence(
                 new Vec3i(0, 0, 0),
                 new Vec3i(5, 0, 0),
                 new Vec3i(0, 0, 0),
@@ -53,7 +49,7 @@ public class VoxelCubicBezierTest {
 
     @Test
     public void instantiateIteratorComplexThreeDimension() {
-        val testCurve = new VoxelCubicBezier(
+        val testCurve = new CubicBezierVoxelSequence(
                 new Vec3i(0, 0, 0),
                 new Vec3i(100, 200, 100),
                 new Vec3i(0, 150, 0),

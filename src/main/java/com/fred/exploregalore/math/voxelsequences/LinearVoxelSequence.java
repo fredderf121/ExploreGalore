@@ -1,24 +1,22 @@
-package com.fred.exploregalore.math.parametricfunctions;
+package com.fred.exploregalore.math.voxelsequences;
 
-import com.fred.exploregalore.math.PathBuilder;
 import lombok.val;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import org.jetbrains.annotations.NotNull;
 
-public class VoxelLinear implements VoxelSequence {
+public class LinearVoxelSequence implements VoxelSequence {
 
     public static final int NUM_CONFIGURATION_POINTS = 2;
 
     private final Vec3i startPoint;
     private final Vec3i endPoint;
 
-    public VoxelLinear(Vec3i startPoint, Vec3i endPoint) {
+    public LinearVoxelSequence(Vec3i startPoint, Vec3i endPoint) {
         this.startPoint = startPoint;
         this.endPoint = endPoint;
     }
 
-    public VoxelLinear(Vec3i... configurationPoints) {
+    public LinearVoxelSequence(Vec3i... configurationPoints) {
         this(configurationPoints[0], configurationPoints[1]);
     }
 

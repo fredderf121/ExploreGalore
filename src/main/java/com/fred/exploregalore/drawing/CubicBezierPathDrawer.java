@@ -1,7 +1,7 @@
 package com.fred.exploregalore.drawing;
 
 import com.fred.exploregalore.ExploreGalore;
-import com.fred.exploregalore.math.parametricfunctions.VoxelCubicBezier;
+import com.fred.exploregalore.math.voxelsequences.CubicBezierVoxelSequence;
 import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -17,7 +17,7 @@ public enum CubicBezierPathDrawer implements PathDrawer {
                     "was provided " + configurationPos.length + ".");
         }
 
-        for (val voxelPos : new VoxelCubicBezier(configurationPos)) {
+        for (val voxelPos : new CubicBezierVoxelSequence(configurationPos)) {
             if (!PathDrawer.tryPlacingBlock(serverLevel, new BlockPos(voxelPos), block)) {
                 ExploreGalore.LOGGER.debug("tryPlacingBlock failed, likely due to the block already being there.");
             }
@@ -28,6 +28,6 @@ public enum CubicBezierPathDrawer implements PathDrawer {
 
     @Override
     public int numRequiredConfigurationPos() {
-        return VoxelCubicBezier.NUM_CONFIGURATION_POINTS;
+        return CubicBezierVoxelSequence.NUM_CONFIGURATION_POINTS;
     }
 }

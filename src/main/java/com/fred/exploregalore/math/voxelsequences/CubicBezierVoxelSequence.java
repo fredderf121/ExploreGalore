@@ -1,4 +1,4 @@
-package com.fred.exploregalore.math.parametricfunctions;
+package com.fred.exploregalore.math.voxelsequences;
 
 import com.fred.exploregalore.utils.ArrayUtils;
 import com.fred.exploregalore.utils.SimpleMatrixUtils;
@@ -25,7 +25,7 @@ import java.util.function.DoublePredicate;
  *     Efficient Algorithms for 3D Scan-Conversion of Parametric Curves, Surfaces, and Volumes </a></p>
  */
 @Log4j2
-public class VoxelCubicBezier implements VoxelSequence {
+public class CubicBezierVoxelSequence implements VoxelSequence {
 
     /**
      * Matrix {@code 'M'} in the referred paper. This matrix, multiplied by the control-point
@@ -59,10 +59,10 @@ public class VoxelCubicBezier implements VoxelSequence {
     private final DoublePredicate isTWithinBounds = t -> t >= 0 && t <= 1;
 
 
-    public VoxelCubicBezier(Vec3i startingControlPoint,
-                            Vec3i firstCurvatureControlPoint,
-                            Vec3i secondCurvatureControlPoint,
-                            Vec3i endingControlPoint) {
+    public CubicBezierVoxelSequence(Vec3i startingControlPoint,
+                                    Vec3i firstCurvatureControlPoint,
+                                    Vec3i secondCurvatureControlPoint,
+                                    Vec3i endingControlPoint) {
         P0 = startingControlPoint;
         P1 = firstCurvatureControlPoint;
         P2 = secondCurvatureControlPoint;
@@ -79,7 +79,7 @@ public class VoxelCubicBezier implements VoxelSequence {
 
     }
 
-    public VoxelCubicBezier(Vec3i ... configurationPoints) {
+    public CubicBezierVoxelSequence(Vec3i ... configurationPoints) {
         this(configurationPoints[0], configurationPoints[1], configurationPoints[2], configurationPoints[3]);
     }
 
@@ -99,13 +99,16 @@ public class VoxelCubicBezier implements VoxelSequence {
     @NotNull
     @Override
     public VoxelSequenceIterator iterator() {
+        // We run into infinite loop problems if all the points are the same (and ONLY when all the points are the same),
+        // so we 'bandage' this situation by returning a SingleVoxelSequence
+        if (Vec3iUtils.allEqual(P0, P1, P2, P3)) {
+            return new SingleVoxelSequence(P0).iterator();
+        }
         return new VoxelCubicBezierIterator();
 
     }
 
 
-    // TODO: If the iterator for a given 4 points are used frequently and performance is bad,
-    //  refactor the constants into another class so that they aren't calculated every time
     private class VoxelCubicBezierIterator implements VoxelSequenceIterator {
 
 
@@ -123,12 +126,22 @@ public class VoxelCubicBezier implements VoxelSequence {
         private final long N_DOUBLED_CUBED;
 
 
-        private long[] xForwardDifferencesScaled;
-        private long[] yForwardDifferencesScaled;
-        private long[] zForwardDifferencesScaled;
+        private final long[] xForwardDifferencesScaled;
+        private final long[] yForwardDifferencesScaled;
+        private final long[] zForwardDifferencesScaled;
 
         private Vec3i currentVoxel;
         private Vec3i nextVoxel;
+
+        /**
+         * Used as a bandage variable for the {@link #hasNext()} function for the case where P0 == P3, as
+         * the currentVoxel == P3 check would immediately terminate after only one block is placed.
+         *
+         * <p>
+         *     Here, we enforce that the number of voxels generated must be larger than 1
+         * </p>
+         */
+        private int numVoxelsGenerated;
 
 
         public VoxelCubicBezierIterator() {
@@ -136,6 +149,8 @@ public class VoxelCubicBezier implements VoxelSequence {
             // 'one-before-the-first' (similar and opposite to one-past-the-end).
             currentVoxel = new Vec3i(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
             nextVoxel = P0;
+
+            numVoxelsGenerated = 0;
 
             val maxFirstDerivativeAbs = maxFirstDerivativeAbs();
 
@@ -162,12 +177,19 @@ public class VoxelCubicBezier implements VoxelSequence {
 
         @Override
         public boolean hasNext() {
-            return !currentVoxel.equals(P3);
+            // Notice that the currentVoxel.equals(P3) component incorrectly stops immediately
+            // when P3 == P0 (the starting point). Therefore, we 'bandage' this by introducing a
+            // counter variable that enforces that we must generate more than 1 voxel before being allowed
+            // to terminate.
+            // P3 is the ending control point.
+            return !(currentVoxel.equals(P3) && numVoxelsGenerated > 1);
+
         }
 
         @Override
         public Vec3i next() {
             currentVoxel = nextVoxel;
+            numVoxelsGenerated++;
 
             int debug_NumRepeatedUpdates = 0;
 
@@ -214,7 +236,7 @@ public class VoxelCubicBezier implements VoxelSequence {
                 updateForwardDifferences(zForwardDifferencesScaled);
             } while (nextVoxel.equals(currentVoxel));
 
-            log.debug("Next voxel position: {}", currentVoxel);
+            log.trace("Next voxel position: {}", currentVoxel);
             log.trace("The loop required {} iterations to find the next step", debug_NumRepeatedUpdates);
 
             return currentVoxel;

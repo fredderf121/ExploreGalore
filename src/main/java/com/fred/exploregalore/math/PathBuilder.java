@@ -1,16 +1,14 @@
 package com.fred.exploregalore.math;
 
 
-import com.fred.exploregalore.math.parametricfunctions.ParametricFunction;
-import com.fred.exploregalore.math.parametricfunctions.ParametricFunction.*;
+import com.fred.exploregalore.math.voxelsequences.LinearVoxelSequence;
+import com.fred.exploregalore.math.voxelsequences.ParametricFunction;
+import com.fred.exploregalore.math.voxelsequences.ParametricFunction.*;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
 
 
 /**
@@ -95,7 +93,7 @@ public class PathBuilder {
 
 
     /**
-     * Use {@link com.fred.exploregalore.math.parametricfunctions.VoxelLinear} instead.
+     * Use {@link LinearVoxelSequence} instead.
      */
     @Deprecated
     public PathBuilder linearPath3D(BlockPos startPos, BlockPos endPos) {
