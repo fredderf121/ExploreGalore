@@ -1,10 +1,8 @@
-package com.fred.exploregalore.item;
+package com.fred.exploregalore.item.builderswand;
 
 import com.fred.exploregalore.ExploreGalore;
-import com.fred.exploregalore.drawing.CubicBezierPathDrawer;
-import com.fred.exploregalore.drawing.LinearPathDrawer;
-import com.fred.exploregalore.drawing.PathDrawer;
-import lombok.AllArgsConstructor;
+import com.fred.exploregalore.item.ExploreGaloreItems;
+import com.fred.exploregalore.utils.CompoundTagUtils;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import net.minecraft.core.BlockPos;
@@ -25,54 +23,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
 @Slf4j
 public class BuildersWand extends Item {
 
-    private static final String IS_STARTING_BLOCK_SET_TAG_NAME = "is_starting_block_set";
-
     private static final String BLOCK_POS_LIST_TAG_NAME = "positions";
     private static final byte BLOCK_POS_LIST_TAG_TYPE = Tag.TAG_COMPOUND;
-
-    @AllArgsConstructor
-    private enum Mode {
-        // TODO: Move strings to language files.
-        LINEAR(LinearPathDrawer.INSTANCE, "Linear"),
-        CUBIC_BEZIER(CubicBezierPathDrawer.INSTANCE, "Cubic Bezier");
-
-        public static final String TAG_NAME = "mode";
-
-        public static final Mode DEFAULT_MODE = LINEAR;
-
-        private final PathDrawer pathDrawer;
-        private final String name;
-
-        private static final Mode[] modes = Mode.values();
-
-        public static Mode fromOrdinal(int ordinal) {
-            return modes[ordinal];
-        }
-
-        public static int numModes() {
-            return modes.length;
-        }
-
-        public int numRequiredBlockPos() {
-            return pathDrawer.numRequiredConfigurationPos();
-        }
-
-        public void drawPath(ServerLevel serverLevel, Block block, BlockPos... configurationPos) {
-            pathDrawer.drawPath(serverLevel, block, configurationPos);
-        }
-
-
-        @Override
-        public String toString() {
-            return this.name;
-        }
-    }
 
     public BuildersWand() {
         super(new Properties().stacksTo(1).tab(CreativeModeTab.TAB_MISC));
@@ -85,23 +42,21 @@ public class BuildersWand extends Item {
             return;
         }
 
-        val tag = heldItem.getOrCreateTag();
+        val wandTag = heldItem.getOrCreateTag();
 
         // Checking there is no mode set -> set the default mode.
-        if (!tag.contains(Mode.TAG_NAME)) {
-            tag.putInt(Mode.TAG_NAME, Mode.DEFAULT_MODE.ordinal());
-        }
+        val currentMode = getVoxelSequenceModeOrSetDefault(wandTag);
 
         // Simple modulus cycling to get the next mode
-        int nextMode = (tag.getInt(Mode.TAG_NAME) + 1) % Mode.numModes();
-        tag.putInt(Mode.TAG_NAME, nextMode);
+        int nextMode = (currentMode.ordinal() + 1) % VoxelSequenceMode.numModes();
+        wandTag.putInt(VoxelSequenceMode.TAG_NAME, nextMode);
 
         // Clearing the previous list of BlockPos.
-        clearBlockPosList(tag);
+        clearBlockPosList(wandTag);
 
         // TODO: Put this into the en_us language file.
         // 'true' as second argument shows a pop-up message; 'false' shows in chat.
-        player.displayClientMessage(new TextComponent("Switched drawing mode to " + Mode.fromOrdinal(nextMode)), true);
+        player.displayClientMessage(new TextComponent("Switched drawing mode to " + VoxelSequenceMode.fromOrdinal(nextMode)), true);
 
     }
 
@@ -125,17 +80,22 @@ public class BuildersWand extends Item {
 
         int numSavedPositions = addNewPosToTag(wandTag, new BlockPlaceContext(useOnContext).getClickedPos());
 
-        val drawingMode = Mode.fromOrdinal(wandTag.getInt(Mode.TAG_NAME));
+        val voxelSequenceMode = getVoxelSequenceModeOrSetDefault(wandTag);
+        val blockPlacementMode = getBlockPlacementModeOrSetDefault(wandTag);
 
         // Draw the path if the number of saved blockPos is met
-        if (numSavedPositions == drawingMode.numRequiredBlockPos()) {
-            BlockPos[] positions = wandTag.getList(BLOCK_POS_LIST_TAG_NAME, BLOCK_POS_LIST_TAG_TYPE)
+        if (numSavedPositions == voxelSequenceMode.numRequiredBlockPos()) {
+            BlockPos[] configPositions = wandTag.getList(BLOCK_POS_LIST_TAG_NAME, BLOCK_POS_LIST_TAG_TYPE)
                     .stream()
                     .map(tag -> NbtUtils.readBlockPos((CompoundTag) tag))
                     .toArray(BlockPos[]::new);
 
+            val blockPlacementStrategy = blockPlacementMode.createStrategyForLevel((ServerLevel) level);
 
-            drawingMode.drawPath((ServerLevel) level, Blocks.LIME_WOOL, positions);
+            voxelSequenceMode.createSequenceWith(configPositions)
+                            .forEach(position -> {
+                                blockPlacementStrategy.placeBlocksAround(new BlockPos(position));
+                            });
 
             // Clearing the list of blockPos since we're finished drawing.
             clearBlockPosList(wandTag);
@@ -152,8 +112,8 @@ public class BuildersWand extends Item {
         return super.use(p_41432_, p_41433_, p_41434_);
     }
 
-    private int addNewPosToTag(CompoundTag wandTag,
-                               BlockPos newlyClickedPos) {
+    private static int addNewPosToTag(CompoundTag wandTag,
+                                      BlockPos newlyClickedPos) {
         // The second integer is for the type of the list (in this case a BlockPos tag is a CompoundTag).
         val listOfBlockPosConfig = wandTag.getList(BLOCK_POS_LIST_TAG_NAME, BLOCK_POS_LIST_TAG_TYPE);
         listOfBlockPosConfig.add(NbtUtils.writeBlockPos(newlyClickedPos));
@@ -162,6 +122,22 @@ public class BuildersWand extends Item {
         ExploreGalore.LOGGER.debug(wandTag.toString());
 
         return listOfBlockPosConfig.size();
+    }
+
+    private static VoxelSequenceMode getVoxelSequenceModeOrSetDefault(CompoundTag wandTag) {
+        return VoxelSequenceMode.fromOrdinal(CompoundTagUtils.getIntOrSetDefault(
+                wandTag,
+                VoxelSequenceMode.TAG_NAME,
+                VoxelSequenceMode.DEFAULT_MODE.ordinal()));
+    }
+
+    private static BlockPlacementStrategyMode getBlockPlacementModeOrSetDefault(CompoundTag wandTag) {
+        return BlockPlacementStrategyMode.fromOrdinal(CompoundTagUtils.getIntOrSetDefault(
+                wandTag,
+                BlockPlacementStrategyMode.TAG_NAME,
+                BlockPlacementStrategyMode.DEFAULT_MODE.ordinal()
+        ));
+
     }
 
     private static void clearBlockPosList(CompoundTag wandTag) {

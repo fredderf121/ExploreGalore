@@ -33,15 +33,6 @@ public enum LinearPathDrawer implements PathDrawer {
 
     }
 
-    /*
-     * 1. Using a series of BlockPos, configure a VoxelSequence.
-     * 2. Iterate through the VoxelSequence and feed the BlockPlacementStrategy each generated Vec3i.
-     *   2a. In the BlockPlacementStrategy, use the provided Vec3i to place one or more blocks in the world
-     *       using the provided serverLevel.
-     */
-
-    //  default void drawPath(ServerLevel serverLevel, BlockPlacementStrategy strategy, VoxelSequence sequence)
-
     @Override
     public int numRequiredConfigurationPos() {
         return LinearVoxelSequence.NUM_CONFIGURATION_POINTS;

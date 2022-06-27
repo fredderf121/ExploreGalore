@@ -1,6 +1,7 @@
 package com.fred.exploregalore.item;
 
 import com.fred.exploregalore.ExploreGalore;
+import com.fred.exploregalore.item.builderswand.BuildersWand;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

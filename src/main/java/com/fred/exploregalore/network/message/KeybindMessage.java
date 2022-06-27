@@ -1,7 +1,7 @@
 package com.fred.exploregalore.network.message;
 
 import com.fred.exploregalore.client.Keybinds;
-import com.fred.exploregalore.item.BuildersWand;
+import com.fred.exploregalore.item.builderswand.BuildersWand;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.val;
