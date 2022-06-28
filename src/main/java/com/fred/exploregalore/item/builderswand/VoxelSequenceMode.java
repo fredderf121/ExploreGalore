@@ -27,8 +27,6 @@ enum VoxelSequenceMode {
 
 
     // Note that the order matters due to Lombok's @AllArgsConstructor.
-
-
     private final Function<Vec3i[], VoxelSequence> factoryGeneratorFunction;
     private final int numRequiredConfigurationPos;
     private final String name;

@@ -1,4 +1,4 @@
-package com.fred.exploregalore.drawing;
+package com.fred.exploregalore.drawing.block_placement_strategy;
 
 
 import net.minecraft.core.BlockPos;

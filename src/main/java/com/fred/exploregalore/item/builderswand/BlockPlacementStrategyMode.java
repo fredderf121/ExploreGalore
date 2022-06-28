@@ -1,15 +1,12 @@
 package com.fred.exploregalore.item.builderswand;
 
-import com.fred.exploregalore.drawing.BlockPlacementStrategy;
-import com.fred.exploregalore.drawing.SingleBlockPlacementStrategy;
-import com.fred.exploregalore.math.voxelsequences.VoxelSequence;
+import com.fred.exploregalore.drawing.block_placement_strategy.BlockPlacementStrategy;
+import com.fred.exploregalore.drawing.block_placement_strategy.SingleBlockPlacementStrategy;
 import lombok.AllArgsConstructor;
-import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @AllArgsConstructor
 public enum BlockPlacementStrategyMode {

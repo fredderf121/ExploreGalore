@@ -1,16 +1,19 @@
 package com.fred.exploregalore.drawing;
 
+import com.fred.exploregalore.ExploreGalore;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public interface PathDrawer {
 
 
     /**
      * Place a sequence of blocks in the world based on the provided {@code configurationPos}
-     * @param serverLevel The world to place blocks in
-     * @param block The block to use; TODO: Allow for a block placement strategy eventually, instead of a single block
+     *
+     * @param serverLevel      The world to place blocks in
+     * @param block            The block to use; TODO: Allow for a block placement strategy eventually, instead of a single block
      * @param configurationPos A series of {@link BlockPos} that determine how the path will look (e.g., a linear
      *                         path will need a starting and ending BlockPos)
      * @throws IllegalArgumentException if the series of {@link BlockPos} does not match the required configuration;
@@ -35,4 +38,12 @@ public interface PathDrawer {
         return serverLevel.setBlock(blockPos, blockToPlace.defaultBlockState(), Block.UPDATE_ALL);
 
     }
+
+    static void tryPlacingBlock(ServerLevel serverLevel, BlockPos blockPos, BlockState blockState) {
+        if (!serverLevel.setBlock(blockPos, blockState, Block.UPDATE_ALL)) {
+            ExploreGalore.LOGGER.debug(
+                    "Block was not placed. It is likely that the block already at the basis position already had the same BlockState.");
+        }
+    }
+
 }

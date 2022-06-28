@@ -1,6 +1,7 @@
 package com.fred.exploregalore.item.builderswand;
 
 import com.fred.exploregalore.ExploreGalore;
+import com.fred.exploregalore.drawing.block_placement_context.BlockPlacements;
 import com.fred.exploregalore.item.ExploreGaloreItems;
 import com.fred.exploregalore.utils.CompoundTagUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 
 @Slf4j
 public class BuildersWand extends Item {
@@ -90,11 +90,9 @@ public class BuildersWand extends Item {
                     .map(tag -> NbtUtils.readBlockPos((CompoundTag) tag))
                     .toArray(BlockPos[]::new);
 
-            val blockPlacementStrategy = blockPlacementMode.createStrategyForLevel((ServerLevel) level);
-
             voxelSequenceMode.createSequenceWith(configPositions)
-                            .forEach(position -> {
-                                blockPlacementStrategy.placeBlocksAround(new BlockPos(position));
+                            .forEach(basisPosition -> {
+                                BlockPlacements.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(basisPosition), BlockPlacements.WALL_COBBLE);
                             });
 
             // Clearing the list of blockPos since we're finished drawing.
