@@ -1,8 +1,9 @@
 package com.fred.exploregalore.commands;
 
 import com.fred.exploregalore.ExploreGalore;
-import com.fred.exploregalore.drawing.CubicBezierPathDrawer;
-import com.fred.exploregalore.drawing.LinearPathDrawer;
+import com.fred.exploregalore.drawing.PathDrawer;
+import com.fred.exploregalore.math.voxelsequences.CubicBezierVoxelSequence;
+import com.fred.exploregalore.math.voxelsequences.LinearVoxelSequence;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -15,6 +16,7 @@ import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.commands.SetBlockCommand;
 import net.minecraft.server.level.ServerLevel;
@@ -76,7 +78,7 @@ public class DrawBlockPathCommand {
      *         These are all the arguments we want, so we specify what should happen if
      *         the user correctly types all these arguments in using {@code .executes()}.
      *         We provide an implementation of the functional interface {@link Command},
-     *         where we call our own method, {@link LinearPathDrawer#drawBlockPath}.
+     *         where we call our own method, {@link LinearVoxelSequence#configuredWith}.
      *         The functional interface provides a {@link CommandContext} as a parameter.
      *         We use that to retrieve values provided in the command (like blockpos).
      *     </li>
@@ -94,11 +96,10 @@ public class DrawBlockPathCommand {
                                         .then(Commands.argument("startPos", BlockPosArgument.blockPos())
                                                 .then(Commands.argument("endPos", BlockPosArgument.blockPos())
                                                         .executes(context -> {
-                                                            LinearPathDrawer.INSTANCE.drawPath(
-                                                                    context.getSource().getLevel(),
-                                                                    BlockStateArgument.getBlock(context, "block").getState().getBlock(),
-                                                                    BlockPosArgument.getSpawnablePos(context, "startPos"),
-                                                                    BlockPosArgument.getSpawnablePos(context, "endPos"));
+                                                            LinearVoxelSequence.configuredWith(BlockPosArgument.getSpawnablePos(context, "startPos"),
+                                                                            BlockPosArgument.getSpawnablePos(context, "endPos"))
+                                                                    .forEach(voxelPos -> PathDrawer.tryPlacingBlock(context.getSource().getLevel(),
+                                                                            new BlockPos(voxelPos), BlockStateArgument.getBlock(context, "block").getState()));
                                                             return 0; // The function called is a void function.
 
                                                         })
@@ -118,14 +119,15 @@ public class DrawBlockPathCommand {
                                                                 .then(Commands.argument("P3", BlockPosArgument.blockPos())
                                                                         .executes(context ->
                                                                         {
-                                                                            CubicBezierPathDrawer.INSTANCE.drawPath(
-                                                                                    context.getSource().getLevel(),
-                                                                                    BlockStateArgument.getBlock(context, "block").getState().getBlock(),
-                                                                                    BlockPosArgument.getSpawnablePos(context, "P0"),
-                                                                                    BlockPosArgument.getSpawnablePos(context, "P1"),
-                                                                                    BlockPosArgument.getSpawnablePos(context, "P2"),
-                                                                                    BlockPosArgument.getSpawnablePos(context, "P3"));
-                                                                            return 0; // The function called is a void function, so we must return a temp value.
+
+                                                                            CubicBezierVoxelSequence.configuredWith(
+                                                                                            BlockPosArgument.getSpawnablePos(context, "P0"),
+                                                                                            BlockPosArgument.getSpawnablePos(context, "P1"),
+                                                                                            BlockPosArgument.getSpawnablePos(context, "P2"),
+                                                                                            BlockPosArgument.getSpawnablePos(context, "P3"))
+                                                                                    .forEach(voxelPos -> PathDrawer.tryPlacingBlock(context.getSource().getLevel(),
+                                                                                            new BlockPos(voxelPos), BlockStateArgument.getBlock(context, "block").getState()));
+                                                                            return 0; // The function called is a void function, so we must return a filler value.
                                                                         })
                                                                 )))))
 
