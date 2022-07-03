@@ -19,4 +19,9 @@ public class ConstantBlockPlacementGenerator implements BlockPlacementGenerator 
     public List<BlockPlacementContext> getNextPlacements() {
         return placementContexts;
     }
+
+    @Override
+    public void reset() {
+
+    }
 }

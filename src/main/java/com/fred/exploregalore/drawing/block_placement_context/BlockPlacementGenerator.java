@@ -1,5 +1,8 @@
 package com.fred.exploregalore.drawing.block_placement_context;
 
+import com.fred.exploregalore.drawing.block_placement_strategy.BlockPlacementStrategy;
+
+import java.util.Arrays;
 import java.util.List;
 
 public interface BlockPlacementGenerator {
@@ -13,5 +16,20 @@ public interface BlockPlacementGenerator {
      * </p>
      */
     List<BlockPlacementContext> getNextPlacements();
+
+    /**
+     * Sets the generator back to its initial state.
+     */
+    void reset();
+
+
+
+    static BlockPlacementGenerator constant(BlockPlacementContext... contexts) {
+        return new ConstantBlockPlacementGenerator(contexts);
+    }
+
+    static AlternatingBlockPlacementGenerator alternating(BlockPlacementContext[][] contexts) {
+        return new AlternatingBlockPlacementGenerator(Arrays.stream(contexts).map(BlockPlacementGenerator::constant).toList());
+    }
 
 }
