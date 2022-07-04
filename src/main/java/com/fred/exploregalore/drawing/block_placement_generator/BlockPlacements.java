@@ -1,12 +1,7 @@
-package com.fred.exploregalore.drawing.block_placement_context;
+package com.fred.exploregalore.drawing.block_placement_generator;
 
-import com.fred.exploregalore.drawing.PathDrawer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
-
-import java.util.Arrays;
 
 public class BlockPlacements {
 
@@ -29,8 +24,4 @@ public class BlockPlacements {
                             BlockPlacementContext.of(BlockPos.ZERO.above(2), Blocks.STONE_SLAB.defaultBlockState())
                     }});
 
-    public static void placeBlocksAroundBasis(ServerLevel serverLevel, BlockPos basisPosition, BlockPlacementGenerator design) {
-        design.getNextPlacements()
-                .forEach(context -> PathDrawer.tryPlacingBlock(serverLevel, basisPosition.offset(context.relativePos()), context.blockState()));
-    }
 }

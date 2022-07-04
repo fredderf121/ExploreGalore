@@ -1,4 +1,4 @@
-package com.fred.exploregalore.drawing.block_placement_context;
+package com.fred.exploregalore.drawing.block_placement_generator;
 
 
 import java.util.List;
@@ -33,10 +33,14 @@ public class AlternatingBlockPlacementGenerator implements BlockPlacementGenerat
         alternatingGenerators.forEach(BlockPlacementGenerator::reset);
     }
 
+
+
     @Override
     public List<BlockPlacementContext> getNextPlacements() {
         // Cycle through the constant generators, and increment count so that the next call of getNextPlacements
         // returns the next sequence of placements.
         return alternatingGenerators.get(count++ % numAlternatingSequences).getNextPlacements();
     }
+
+
 }

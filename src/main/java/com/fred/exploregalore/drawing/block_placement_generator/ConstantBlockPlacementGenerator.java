@@ -1,4 +1,4 @@
-package com.fred.exploregalore.drawing.block_placement_context;
+package com.fred.exploregalore.drawing.block_placement_generator;
 
 import java.util.List;
 

@@ -1,7 +1,8 @@
 package com.fred.exploregalore.item.builderswand;
 
 import com.fred.exploregalore.ExploreGalore;
-import com.fred.exploregalore.drawing.block_placement_context.BlockPlacements;
+import com.fred.exploregalore.drawing.block_placement_generator.BlockPlacementGenerator;
+import com.fred.exploregalore.drawing.block_placement_generator.BlockPlacements;
 import com.fred.exploregalore.item.ExploreGaloreItems;
 import com.fred.exploregalore.utils.CompoundTagUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -94,7 +95,7 @@ public class BuildersWand extends Item {
             BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_2.reset();
             voxelSequenceMode.createSequenceWith(configPositions)
                             .forEach(basisPosition -> {
-                                BlockPlacements.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(basisPosition), BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_2);
+                                BlockPlacementGenerator.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(basisPosition), BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_2);
                             });
 
             // Clearing the list of blockPos since we're finished drawing.
