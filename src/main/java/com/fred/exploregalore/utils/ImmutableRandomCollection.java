@@ -15,6 +15,7 @@ import java.util.function.ToDoubleFunction;
  * <p>
  * Ex: If item 1 has a weighting of 1 and item 2 has a weighting of 2, then the total weighting is 1 + 2 = 3.
  */
+@Deprecated // TODO: Delete this
 public class ImmutableRandomCollection<E> {
     private final NavigableMap<Double, E> map;
     private final Random random;
