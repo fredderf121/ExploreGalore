@@ -92,10 +92,10 @@ public class BuildersWand extends Item {
                     .toArray(BlockPos[]::new);
 
             // TODO: Code smell with resetting a static final variable! Will not work with multiplayer!
-            BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_2.reset();
+            BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_6.reset();
             voxelSequenceMode.createSequenceWith(configPositions)
                     .forEach(basisPosition -> {
-                        BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_2.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(basisPosition));
+                        BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_6.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(basisPosition));
                     });
 
             // Clearing the list of blockPos since we're finished drawing.

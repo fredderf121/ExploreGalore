@@ -49,8 +49,8 @@ public interface BlockPlacementGenerator {
             this.generators = new ArrayList<>();
         }
 
-        public Builder constant(BlockPlacementContext context) {
-            generators.add(new ConstantBlockPlacementGenerator(context));
+        public Builder constant(BlockPos relativePos, BlockState blockState) {
+            generators.add(new ConstantBlockPlacementGenerator(new BlockPlacementContext(relativePos, blockState)));
             return this;
         }
 
@@ -78,7 +78,8 @@ public interface BlockPlacementGenerator {
             return this;
         }
 
-        public Builder randomSamePosition(BlockPos relativePos, Pair<BlockState, Double>... weightedBlockStates) {
+        @SafeVarargs
+        public final Builder randomSamePosition(BlockPos relativePos, Pair<BlockState, Double>... weightedBlockStates) {
             generators.add(new RandomWeightedBlockPlacementGenerator(
                     new EnumeratedDistribution<>(
                             Arrays.stream(weightedBlockStates)
