@@ -91,12 +91,12 @@ public class BuildersWand extends Item {
                     .map(tag -> NbtUtils.readBlockPos((CompoundTag) tag))
                     .toArray(BlockPos[]::new);
 
-            // TODO: Code smell with resetting a static final variable!
+            // TODO: Code smell with resetting a static final variable! Will not work with multiplayer!
             BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_2.reset();
             voxelSequenceMode.createSequenceWith(configPositions)
-                            .forEach(basisPosition -> {
-                                BlockPlacementGenerator.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(basisPosition), BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_2);
-                            });
+                    .forEach(basisPosition -> {
+                        BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_2.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(basisPosition));
+                    });
 
             // Clearing the list of blockPos since we're finished drawing.
             clearBlockPosList(wandTag);

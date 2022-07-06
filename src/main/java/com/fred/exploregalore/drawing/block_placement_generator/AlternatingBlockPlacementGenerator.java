@@ -1,6 +1,7 @@
 package com.fred.exploregalore.drawing.block_placement_generator;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,36 +11,30 @@ public class AlternatingBlockPlacementGenerator implements BlockPlacementGenerat
 
     private int count;
 
-    private final List<BlockPlacementGenerator> alternatingGenerators;
+    private final List<BlockPlacementContext> alternatingContexts;
     private final int numAlternatingSequences;
 
-    public AlternatingBlockPlacementGenerator(BlockPlacementGenerator... alternatingGenerators) {
-        this(List.of(alternatingGenerators));
-    }
-
-    public AlternatingBlockPlacementGenerator(List<BlockPlacementGenerator> alternatingGenerators) {
-        if (alternatingGenerators.size() == 0) {
+    public AlternatingBlockPlacementGenerator(List<BlockPlacementContext> alternatingContexts) {
+        if (alternatingContexts.size() == 0) {
             throw new IllegalArgumentException("There must be at least one ConstantBlockPlacementGenerator provided!");
         }
 
-        this.alternatingGenerators = alternatingGenerators;
-        this.numAlternatingSequences = alternatingGenerators.size();
+        this.alternatingContexts = alternatingContexts;
+        this.numAlternatingSequences = alternatingContexts.size();
         this.count = 0;
     }
+
 
     @Override
     public void reset() {
         this.count = 0;
-        alternatingGenerators.forEach(BlockPlacementGenerator::reset);
     }
-
 
 
     @Override
     public List<BlockPlacementContext> getNextPlacements() {
-        // Cycle through the constant generators, and increment count so that the next call of getNextPlacements
-        // returns the next sequence of placements.
-        return alternatingGenerators.get(count++ % numAlternatingSequences).getNextPlacements();
+        // Cycle through the placement contexts
+        return List.of(alternatingContexts.get(count++ % numAlternatingSequences));
     }
 
 

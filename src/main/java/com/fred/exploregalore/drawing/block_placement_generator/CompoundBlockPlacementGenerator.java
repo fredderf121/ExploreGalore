@@ -1,12 +1,15 @@
 package com.fred.exploregalore.drawing.block_placement_generator;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+
 import java.util.List;
 
 public class CompoundBlockPlacementGenerator implements BlockPlacementGenerator {
     private final List<BlockPlacementGenerator> placementGenerators;
 
-    public CompoundBlockPlacementGenerator(BlockPlacementGenerator... generators) {
-        this.placementGenerators = List.of(generators);
+    public CompoundBlockPlacementGenerator(List<BlockPlacementGenerator> generators) {
+        this.placementGenerators = generators;
     }
 
     @Override
@@ -17,6 +20,7 @@ public class CompoundBlockPlacementGenerator implements BlockPlacementGenerator 
                 .flatMap(List::stream)
                 .toList();
     }
+
 
     @Override
     public void reset() {
