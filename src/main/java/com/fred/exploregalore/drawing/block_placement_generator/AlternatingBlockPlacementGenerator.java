@@ -1,15 +1,14 @@
 package com.fred.exploregalore.drawing.block_placement_generator;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Cycles between several placement generators when calling {@link #getNextPlacements()}.
+ * Cycles between several placement generators when calling {@link #getPlacements()}.
  */
 public class AlternatingBlockPlacementGenerator implements BlockPlacementGenerator {
 
-    private int count;
+    private final int count;
 
     private final List<BlockPlacementContext> alternatingContexts;
     private final int numAlternatingSequences;
@@ -24,17 +23,23 @@ public class AlternatingBlockPlacementGenerator implements BlockPlacementGenerat
         this.count = 0;
     }
 
-
-    @Override
-    public void reset() {
-        this.count = 0;
+    private AlternatingBlockPlacementGenerator(List<BlockPlacementContext> alternatingContexts, int count) {
+        this.alternatingContexts = alternatingContexts;
+        this.numAlternatingSequences = alternatingContexts.size();
+        this.count = count;
     }
 
 
+
+
     @Override
-    public List<BlockPlacementContext> getNextPlacements() {
-        // Cycle through the placement contexts
-        return List.of(alternatingContexts.get(count++ % numAlternatingSequences));
+    public List<BlockPlacementContext> getPlacements() {
+        return List.of(alternatingContexts.get(count % numAlternatingSequences));
+    }
+
+    @Override
+    public BlockPlacementGenerator update() {
+        return new AlternatingBlockPlacementGenerator(alternatingContexts, count + 1);
     }
 
 

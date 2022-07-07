@@ -1,8 +1,5 @@
 package com.fred.exploregalore.drawing.block_placement_generator;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-
 import java.util.List;
 
 public class CompoundBlockPlacementGenerator implements BlockPlacementGenerator {
@@ -13,17 +10,18 @@ public class CompoundBlockPlacementGenerator implements BlockPlacementGenerator 
     }
 
     @Override
-    public List<BlockPlacementContext> getNextPlacements() {
+    public List<BlockPlacementContext> getPlacements() {
         // TODO: flatMap could be a performance concern?
         return placementGenerators.stream()
-                .map(BlockPlacementGenerator::getNextPlacements)
+                .map(BlockPlacementGenerator::getPlacements)
                 .flatMap(List::stream)
                 .toList();
     }
 
-
     @Override
-    public void reset() {
-        placementGenerators.forEach(BlockPlacementGenerator::reset);
+    public BlockPlacementGenerator update() {
+        return new CompoundBlockPlacementGenerator(placementGenerators.stream().map(BlockPlacementGenerator::update).toList());
     }
+
+
 }

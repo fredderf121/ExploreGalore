@@ -5,6 +5,7 @@ import com.fred.exploregalore.drawing.block_placement_generator.BlockPlacementGe
 import com.fred.exploregalore.drawing.block_placement_generator.BlockPlacements;
 import com.fred.exploregalore.item.ExploreGaloreItems;
 import com.fred.exploregalore.utils.CompoundTagUtils;
+import com.google.common.collect.Streams;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import net.minecraft.core.BlockPos;
@@ -91,12 +92,20 @@ public class BuildersWand extends Item {
                     .map(tag -> NbtUtils.readBlockPos((CompoundTag) tag))
                     .toArray(BlockPos[]::new);
 
-            // TODO: Code smell with resetting a static final variable! Will not work with multiplayer!
-            BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_6.reset();
-            voxelSequenceMode.createSequenceWith(configPositions)
-                    .forEach(basisPosition -> {
-                        BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_6.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(basisPosition));
-                    });
+            Streams.stream(voxelSequenceMode.createSequenceWith(configPositions))
+                    .reduce( // What's really desired is a non-parallellizable fold-left, but this will do.
+                            BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_6,
+                            (generator, voxelBasisPosition) -> {
+                                generator.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(voxelBasisPosition));
+                                return generator.update();
+                            },
+                            (noCombinerNeededBecauseNotParallelizable1, var2) ->
+                            {
+                                throw new UnsupportedOperationException("Combiner on the reduce should not be called");
+                            }
+
+                    );
+
 
             // Clearing the list of blockPos since we're finished drawing.
             clearBlockPosList(wandTag);

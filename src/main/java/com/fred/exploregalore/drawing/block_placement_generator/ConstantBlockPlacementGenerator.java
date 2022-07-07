@@ -16,12 +16,14 @@ public class ConstantBlockPlacementGenerator implements BlockPlacementGenerator 
 
 
     @Override
-    public List<BlockPlacementContext> getNextPlacements() {
+    public List<BlockPlacementContext> getPlacements() {
         return placementContexts;
     }
 
     @Override
-    public void reset() {
-
+    public BlockPlacementGenerator update() {
+        return this;
     }
+
+
 }

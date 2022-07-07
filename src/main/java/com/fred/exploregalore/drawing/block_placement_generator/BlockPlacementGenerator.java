@@ -1,22 +1,25 @@
 package com.fred.exploregalore.drawing.block_placement_generator;
 
 import com.fred.exploregalore.drawing.PathDrawer;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * All implementing classes should be <i>immutable</i>.
+ */
+@Immutable
 public interface BlockPlacementGenerator {
 
     default void placeBlocksAroundBasis(ServerLevel serverLevel, BlockPos basisPosition) {
-        getNextPlacements()
+        getPlacements()
                 .forEach(context -> PathDrawer.tryPlacingBlock(serverLevel, basisPosition.offset(context.relativePos()), context.blockState()));
     }
 
@@ -25,15 +28,15 @@ public interface BlockPlacementGenerator {
      *
      * <p>
      * In the case of fairly complex placement contexts, this may have the effect of <i>mutating</i> this
-     * object's state, such that the NEXT call of {@link #getNextPlacements()} may return a different value.
+     * object's state, such that the NEXT call of {@link #getPlacements()} may return a different value.
      * </p>
      */
-    List<BlockPlacementContext> getNextPlacements();
+    List<BlockPlacementContext> getPlacements();
 
     /**
-     * Sets the generator back to its initial state.
+     * Returns the next state of the generator.
      */
-    void reset();
+    BlockPlacementGenerator update();
 
     static Builder builder() {
         return new Builder();

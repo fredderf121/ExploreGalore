@@ -4,31 +4,34 @@ package com.fred.exploregalore.drawing.block_placement_generator;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RandomWeightedBlockPlacementGenerator implements BlockPlacementGenerator {
-    private final EnumeratedDistribution<BlockPlacementContext> randomPlacementContextPool;
 
+    private final EnumeratedDistribution<BlockPlacementContext> randomPlacementContextPool;
+    private final BlockPlacementContext generatedContext;
+
+    /**
+     * For immutability and repeatability, we generate the {@link BlockPlacementContext} upon creation of this object.
+     */
     public RandomWeightedBlockPlacementGenerator(EnumeratedDistribution<BlockPlacementContext> placementContexts) {
         this.randomPlacementContextPool = placementContexts;
+        this.generatedContext = placementContexts.sample();
     }
 
     // TODO: Find better organization, as this *always* only returns one block at a time
     @Override
-    public List<BlockPlacementContext> getNextPlacements() {
-        return List.of(randomPlacementContextPool.sample());
+    public List<BlockPlacementContext> getPlacements() {
+        return List.of(generatedContext);
     }
 
-
-
-
-    /**
-     * Does nothing since the generator is random.
-     */
     @Override
-    public void reset() {
+    public BlockPlacementGenerator update() {
+        return new RandomWeightedBlockPlacementGenerator(randomPlacementContextPool);
     }
+
 
     public static Builder builder() {
         return new Builder();
