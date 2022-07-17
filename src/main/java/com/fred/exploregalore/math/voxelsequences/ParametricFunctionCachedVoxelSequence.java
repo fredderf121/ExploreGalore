@@ -53,7 +53,7 @@ public abstract class ParametricFunctionCachedVoxelSequence implements VoxelSequ
         return voxelSequence.get().iterator();
     }
 
-    private List<Vec3i> voxelizeCurve() {
+    protected List<Vec3i> voxelizeCurve() {
         final double startTime = getStartTime();
         final double endTime = getEndTime();
         // Taking the direction of t into consideration

@@ -1,5 +1,6 @@
 package com.fred.exploregalore.utils;
 
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -25,6 +26,10 @@ public final class Vec3Utils {
 
     public static boolean anyGreaterEqThan(Vec3 v, double value) {
         return (v.x >= value) || (v.y >= value) || (v.z >= value);
+    }
+
+    public static Vec3 fromVec3i(Vec3i v) {
+        return Vec3.atLowerCornerOf(v);
     }
 
 
