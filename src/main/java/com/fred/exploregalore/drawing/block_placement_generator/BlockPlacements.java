@@ -6,6 +6,10 @@ import org.apache.commons.math3.util.Pair;
 
 public class BlockPlacements {
 
+    public static final BlockPlacementGenerator SINGLE_COBBLE = new ConstantBlockPlacementGenerator(new BlockPlacementContext(
+            BlockPos.ZERO, Blocks.COBBLESTONE.defaultBlockState()
+    ));
+
     public static final BlockPlacementGenerator WALL_COBBLE = BlockPlacementGenerator.builder()
             .constant(
                     BlockPlacementContext.of(BlockPos.ZERO, Blocks.COBBLESTONE.defaultBlockState()),

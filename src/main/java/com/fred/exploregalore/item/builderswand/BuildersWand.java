@@ -94,7 +94,7 @@ public class BuildersWand extends Item {
 
             Streams.stream(voxelSequenceMode.createSequenceWith(configPositions))
                     .reduce( // What's really desired is a non-parallellizable fold-left, but this will do.
-                            BlockPlacements.UMIBO_GAMING_FENCE_DESIGN_6,
+                            BlockPlacements.SINGLE_COBBLE,
                             (generator, voxelBasisPosition) -> {
                                 generator.placeBlocksAroundBasis((ServerLevel) level, new BlockPos(voxelBasisPosition));
                                 return generator.update();

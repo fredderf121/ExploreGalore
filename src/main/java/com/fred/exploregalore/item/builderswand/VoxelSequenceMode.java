@@ -2,6 +2,7 @@ package com.fred.exploregalore.item.builderswand;
 
 import com.fred.exploregalore.math.voxelsequences.CubicBezierVoxelSequence;
 import com.fred.exploregalore.math.voxelsequences.LinearVoxelSequence;
+import com.fred.exploregalore.math.voxelsequences.QuadraticBezierVoxelSequence;
 import com.fred.exploregalore.math.voxelsequences.VoxelSequence;
 import lombok.AllArgsConstructor;
 import net.minecraft.core.BlockPos;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 enum VoxelSequenceMode {
     // TODO: Move strings to language files.
     LINEAR(LinearVoxelSequence::configuredWith, LinearVoxelSequence.NUM_CONFIGURATION_POINTS, "Linear"),
+    QUADRATIC_BEZIER(QuadraticBezierVoxelSequence::configuredWith, QuadraticBezierVoxelSequence.NUM_CONFIGURATION_POINTS, "Quadratic Bezier"),
     CUBIC_BEZIER(CubicBezierVoxelSequence::configuredWith, CubicBezierVoxelSequence.NUM_CONFIGURATION_POINTS, "Cubic Bezier");
 
     public static final String TAG_NAME = "voxel_sequence";
