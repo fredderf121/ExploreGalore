@@ -3,6 +3,8 @@ package com.fred.exploregalore.math.voxelsequences;
 import com.fred.exploregalore.utils.Vec3Utils;
 import com.fred.exploregalore.utils.Vec3iUtils;
 import com.google.common.base.Suppliers;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
@@ -16,7 +18,10 @@ import java.util.function.Supplier;
  * Precomputed in the sense that the voxel sequence is computed once and saved for future
  * {@link VoxelSequenceIterator#next()} calls.
  */
+@Log4j2
 public abstract class ParametricFunctionCachedVoxelSequence implements VoxelSequence {
+
+
 
     private static final double ONE_WITH_ERROR = 1.0 - 0.001;
 
@@ -99,6 +104,7 @@ public abstract class ParametricFunctionCachedVoxelSequence implements VoxelSequ
             previousPosition = position;
 
         }
+        log.debug("Total iterations in for-loop: {}. Total voxels generated: {}", () ->  1 / get6ConnectedStepSize(), voxelSequence::size);
         return voxelSequence;
     }
 
